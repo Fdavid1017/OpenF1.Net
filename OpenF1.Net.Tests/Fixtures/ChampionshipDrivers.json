@@ -1,0 +1,20 @@
+[
+  {
+    "driver_number": 1,
+    "meeting_key": 1219,
+    "points_current": 429.0,
+    "points_start": 404.0,
+    "position_current": 1,
+    "position_start": 1,
+    "session_key": 9161
+  },
+  {
+    "driver_number": 11,
+    "meeting_key": 1219,
+    "points_current": 235.0,
+    "points_start": 219.0,
+    "position_current": 2,
+    "position_start": 2,
+    "session_key": 9161
+  }
+]

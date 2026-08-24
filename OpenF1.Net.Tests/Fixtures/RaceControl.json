@@ -1,0 +1,41 @@
+[
+  {
+    "category": "Flag",
+    "date": "2023-09-15T13:08:19.923000+00:00",
+    "driver_number": null,
+    "flag": "YELLOW",
+    "lap_number": 8,
+    "meeting_key": 1219,
+    "message": "YELLOW IN TRACK SECTOR 5",
+    "qualifying_phase": null,
+    "scope": "Sector",
+    "sector": 5,
+    "session_key": 9161
+  },
+  {
+    "category": "SessionStatus",
+    "date": "2023-09-15T12:00:00.000000+00:00",
+    "driver_number": null,
+    "flag": null,
+    "lap_number": null,
+    "meeting_key": 1219,
+    "message": "Session Started",
+    "qualifying_phase": null,
+    "scope": null,
+    "sector": null,
+    "session_key": 9161
+  },
+  {
+    "category": "SomeFutureCategory",
+    "date": "2023-09-15T13:20:00.000000+00:00",
+    "driver_number": 1,
+    "flag": "BLACK AND WHITE",
+    "lap_number": 10,
+    "meeting_key": 1219,
+    "message": "CAR 1 (VER) BLACK AND WHITE FLAG",
+    "qualifying_phase": 2,
+    "scope": "Driver",
+    "sector": null,
+    "session_key": 9161
+  }
+]

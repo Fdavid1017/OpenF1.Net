@@ -25,7 +25,7 @@ public class FilterBuilder<TFields>
     public FilterBuilder<TFields> WhereIn<TValue>(Expression<Func<TFields, TValue>> fieldSelector, params TValue[] values)
     {
         var member = (MemberExpression)fieldSelector.Body;
-        var fieldName = ToSnakeCase(member.Member.Name);
+        var fieldName = FieldName(member);
         foreach (var v in values)
             _clauses.Add($"{fieldName}={FormatValue(v)}");
         return this;
@@ -56,7 +56,7 @@ public class FilterBuilder<TFields>
         var left = binary.Left is UnaryExpression { NodeType: ExpressionType.Convert } unary ? unary.Operand : binary.Left;
         var member = left as MemberExpression
             ?? throw new NotSupportedException("Left side of a filter comparison must be a field access.");
-        var fieldName = ToSnakeCase(member.Member.Name);
+        var fieldName = FieldName(member);
 
         var right = binary.Right is UnaryExpression { NodeType: ExpressionType.Convert } rightUnary ? rightUnary.Operand : binary.Right;
         var value = Expression.Lambda(right).Compile().DynamicInvoke();
@@ -84,7 +84,7 @@ public class FilterBuilder<TFields>
             var left = leaf.Left is UnaryExpression { NodeType: ExpressionType.Convert } lu ? lu.Operand : leaf.Left;
             var member = left as MemberExpression
                 ?? throw new NotSupportedException("Left side of an '||' comparison must be a field access.");
-            var name = ToSnakeCase(member.Member.Name);
+            var name = FieldName(member);
             if (fieldName is null)
                 fieldName = name;
             else if (fieldName != name)
@@ -132,6 +132,11 @@ public class FilterBuilder<TFields>
     // on top of this for values containing spaces — ToQueryString() here produces the pre-encoding form.
     static string GetApiValue(Enum e) =>
         e.GetType().GetField(e.ToString())!.GetCustomAttribute<ApiValueAttribute>()?.Value ?? e.ToString();
+
+    // Most property names convert cleanly; a few (numbered suffixes like DurationSector1) need an
+    // explicit override — see the note on ApiFieldNameAttribute.
+    static string FieldName(MemberExpression member) =>
+        member.Member.GetCustomAttribute<ApiFieldNameAttribute>()?.Value ?? ToSnakeCase(member.Member.Name);
 
     static string ToSnakeCase(string pascal) =>
         string.Concat(pascal.Select((c, i) => i > 0 && char.IsUpper(c) ? "_" + c : c.ToString())).ToLowerInvariant();

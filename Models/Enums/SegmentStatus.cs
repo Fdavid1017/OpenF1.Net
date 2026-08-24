@@ -21,8 +21,13 @@ public enum SegmentStatus
 
 class SegmentStatusJsonConverter : JsonConverter<SegmentStatus>
 {
-    public override SegmentStatus Read(ref Utf8JsonReader reader, Type typeToConvert, JsonSerializerOptions options) =>
-        reader.GetInt32() switch
+    public override SegmentStatus Read(ref Utf8JsonReader reader, Type typeToConvert, JsonSerializerOptions options)
+    {
+        // Live data includes null entries (segment not yet reached) alongside the docs' raw integer codes.
+        if (reader.TokenType == JsonTokenType.Null)
+            return SegmentStatus.Unavailable;
+
+        return reader.GetInt32() switch
         {
             0 => SegmentStatus.Unavailable,
             2048 => SegmentStatus.Yellow,
@@ -31,6 +36,7 @@ class SegmentStatusJsonConverter : JsonConverter<SegmentStatus>
             2064 => SegmentStatus.Pitlane,
             _ => SegmentStatus.Unknown,
         };
+    }
 
     public override void Write(Utf8JsonWriter writer, SegmentStatus value, JsonSerializerOptions options) =>
         throw new NotSupportedException($"{nameof(SegmentStatus)} is response-only.");

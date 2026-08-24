@@ -1,0 +1,26 @@
+[
+  {
+    "date": "2023-09-15T13:08:19.923000+00:00",
+    "driver_number": 1,
+    "gap_to_leader": null,
+    "interval": null,
+    "meeting_key": 1219,
+    "session_key": 9161
+  },
+  {
+    "date": "2023-09-15T13:08:19.923000+00:00",
+    "driver_number": 11,
+    "gap_to_leader": 5.123,
+    "interval": 1.456,
+    "meeting_key": 1219,
+    "session_key": 9161
+  },
+  {
+    "date": "2023-09-15T13:08:19.923000+00:00",
+    "driver_number": 44,
+    "gap_to_leader": "+1 LAP",
+    "interval": "+1 LAP",
+    "meeting_key": 1219,
+    "session_key": 9161
+  }
+]

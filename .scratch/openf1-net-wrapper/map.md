@@ -30,11 +30,11 @@ Implementation-ready design spec for **OpenF1.Net** — a C# NuGet library wrapp
 - [Fluent filter builder design](issues/10-fluent-filter-builder-design.md): prototyped and validated — endpoint methods return a deferred, awaitable per-endpoint `XxxQuery` object (not `Task<T[]>` directly) with `.Where()/.And()/.WhereIn()`; OR works both via `WhereIn` and native `||` on the same equality-compared field (throws on non-equality or cross-field `||`); `latest` supported both as a sentinel struct in the builder and as a `GetLatestXAsync()` convenience method.
 - [Polymorphic field modeling](issues/11-polymorphic-field-modeling.md): `GapToLeader` (seconds-or-"+N LAP" wrapper, with `IsLapped`/`ToString()`) used directly on `intervals`; `SessionResultGapToLeader`/`SessionResultDuration` (separate types, each with `Session`/`Q1`/`Q2`/`Q3` named properties) used on `session_result`.
 - [Implement the library](issues/12-implement-library.md): all 18 endpoints built and verified live; fixed 4 real bugs the design phase couldn't have caught (rate-limiter window boundary, `Nullable<TEnum>` converter resolution, `stints.lap_start`/`lap_end` nullability, 404-detail parsing) and confirmed a third live `circuit_type` value (`Temporary - Street`) beyond what the docs list.
+- [Testing strategy](issues/13-testing-strategy.md): two-layer, one `OpenF1.Net.Tests` xUnit project — fake/mocked `Unit/` tests (RichardSzalay.MockHttp, per-endpoint JSON fixtures, deep assertions, all 18 endpoints) run by default, plus opt-in `Live/` tests (`[Trait("Category","Live")]`, excluded by default) hitting the real API across all 18 endpoints with shallow assertions to catch API-drift bugs fakes can't.
 
 ## Not yet specified
 
 - NuGet package metadata polish (`PackageId`, `Version`, `Authors`, `License`, tags, icon) before first real publish.
-- Testing strategy (unit/integration tests, live-API test fixtures, mocking approach) — not yet decided.
 - Possible response caching layer — unrequested so far, may surface once usage patterns are clearer.
 
 ## Out of scope
