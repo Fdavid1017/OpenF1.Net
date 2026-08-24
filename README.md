@@ -1,3 +1,5 @@
+[![Publish NuGet Package](https://github.com/Fdavid1017/OpenF1.Net/actions/workflows/nuget-push.yml/badge.svg?branch=master)](https://github.com/Fdavid1017/OpenF1.Net/actions/workflows/nuget-push.yml)
+
 # OpenF1.Net
 
 .NET wrapper for the [OpenF1 API](https://openf1.org/) ([docs](https://openf1.org/docs)), which provides real-time and historical Formula 1 data — sessions, drivers, lap times, car telemetry, positions, pit stops, weather, race control messages, and more.
