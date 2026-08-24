@@ -1,0 +1,38 @@
+[
+  {
+    "brake": 0,
+    "date": "2023-09-15T13:08:19.923000+00:00",
+    "driver_number": 55,
+    "drs": 12,
+    "meeting_key": 1219,
+    "n_gear": 8,
+    "rpm": 11141,
+    "session_key": 9159,
+    "speed": 315,
+    "throttle": 100
+  },
+  {
+    "brake": 100,
+    "date": "2023-09-15T13:08:20.019000+00:00",
+    "driver_number": 55,
+    "drs": 8,
+    "meeting_key": 1219,
+    "n_gear": 3,
+    "rpm": 9500,
+    "session_key": 9159,
+    "speed": 128,
+    "throttle": 0
+  },
+  {
+    "brake": 0,
+    "date": "2023-09-15T13:08:21.019000+00:00",
+    "driver_number": 55,
+    "drs": 0,
+    "meeting_key": 1219,
+    "n_gear": 1,
+    "rpm": 4200,
+    "session_key": 9159,
+    "speed": 40,
+    "throttle": 25
+  }
+]

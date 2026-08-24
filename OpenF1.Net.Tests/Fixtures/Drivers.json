@@ -1,0 +1,30 @@
+[
+  {
+    "broadcast_name": "M VERSTAPPEN",
+    "country_code": "NED",
+    "driver_number": 1,
+    "first_name": "Max",
+    "full_name": "Max VERSTAPPEN",
+    "headshot_url": "https://example.com/verstappen.png",
+    "last_name": "Verstappen",
+    "meeting_key": 1219,
+    "name_acronym": "VER",
+    "session_key": 9161,
+    "team_colour": "3671C6",
+    "team_name": "Red Bull Racing"
+  },
+  {
+    "broadcast_name": "L HAMILTON",
+    "country_code": "GBR",
+    "driver_number": 44,
+    "first_name": "Lewis",
+    "full_name": "Lewis HAMILTON",
+    "headshot_url": "https://example.com/hamilton.png",
+    "last_name": "Hamilton",
+    "meeting_key": 1219,
+    "name_acronym": "HAM",
+    "session_key": 9161,
+    "team_colour": "27F4D2",
+    "team_name": "Mercedes"
+  }
+]

@@ -1,0 +1,14 @@
+[
+  {
+    "air_temperature": 27.8,
+    "date": "2023-09-15T13:08:19.923000+00:00",
+    "humidity": 58.0,
+    "meeting_key": 1219,
+    "pressure": 1010.1,
+    "rainfall": 0,
+    "session_key": 9161,
+    "track_temperature": 34.5,
+    "wind_direction": 180,
+    "wind_speed": 1.6
+  }
+]
