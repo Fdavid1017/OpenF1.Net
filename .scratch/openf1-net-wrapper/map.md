@@ -1,4 +1,4 @@
-Status: route clear — all 11 tickets resolved, nothing left blocking implementation. Remaining fog (see below) is deliberately deferred, non-blocking.
+Status: destination reached — the library is implemented, builds clean, and is verified against the live API. Remaining fog (see below) is deliberately deferred, non-blocking follow-up work.
 
 ## Destination
 
@@ -29,10 +29,10 @@ Implementation-ready design spec for **OpenF1.Net** — a C# NuGet library wrapp
 - [Namespace/folder layout](issues/09-namespace-layout.md): `OpenF1.Net` / `.Models` / `.Models.Enums` / `.Filters` / `.Exceptions`.
 - [Fluent filter builder design](issues/10-fluent-filter-builder-design.md): prototyped and validated — endpoint methods return a deferred, awaitable per-endpoint `XxxQuery` object (not `Task<T[]>` directly) with `.Where()/.And()/.WhereIn()`; OR works both via `WhereIn` and native `||` on the same equality-compared field (throws on non-equality or cross-field `||`); `latest` supported both as a sentinel struct in the builder and as a `GetLatestXAsync()` convenience method.
 - [Polymorphic field modeling](issues/11-polymorphic-field-modeling.md): `GapToLeader` (seconds-or-"+N LAP" wrapper, with `IsLapped`/`ToString()`) used directly on `intervals`; `SessionResultGapToLeader`/`SessionResultDuration` (separate types, each with `Session`/`Q1`/`Q2`/`Q3` named properties) used on `session_result`.
+- [Implement the library](issues/12-implement-library.md): all 18 endpoints built and verified live; fixed 4 real bugs the design phase couldn't have caught (rate-limiter window boundary, `Nullable<TEnum>` converter resolution, `stints.lap_start`/`lap_end` nullability, 404-detail parsing) and confirmed a third live `circuit_type` value (`Temporary - Street`) beyond what the docs list.
 
 ## Not yet specified
 
-- Per-endpoint response model field→C# type mapping for the ~16 straightforward endpoints (mechanical, guided by the field lists gathered during charting, but not individually specced/ticketed yet).
 - NuGet package metadata polish (`PackageId`, `Version`, `Authors`, `License`, tags, icon) before first real publish.
 - Testing strategy (unit/integration tests, live-API test fixtures, mocking approach) — not yet decided.
 - Possible response caching layer — unrequested so far, may surface once usage patterns are clearer.
