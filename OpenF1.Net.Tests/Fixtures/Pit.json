@@ -1,0 +1,22 @@
+[
+  {
+    "date": "2023-09-15T13:08:19.923000+00:00",
+    "driver_number": 1,
+    "lane_duration": 22.456,
+    "lap_number": 15,
+    "meeting_key": 1219,
+    "pit_duration": 22.456,
+    "session_key": 9161,
+    "stop_duration": 2.4
+  },
+  {
+    "date": "2023-09-15T13:12:00.000000+00:00",
+    "driver_number": 11,
+    "lane_duration": 21.9,
+    "lap_number": 16,
+    "meeting_key": 1219,
+    "pit_duration": 21.9,
+    "session_key": 9161,
+    "stop_duration": null
+  }
+]

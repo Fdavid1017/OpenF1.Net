@@ -1,0 +1,20 @@
+[
+  {
+    "meeting_key": 1219,
+    "points_current": 636.0,
+    "points_start": 599.0,
+    "position_current": 1,
+    "position_start": 1,
+    "session_key": 9161,
+    "team_name": "Red Bull Racing"
+  },
+  {
+    "meeting_key": 1219,
+    "points_current": 409.0,
+    "points_start": 395.0,
+    "position_current": 2,
+    "position_start": 2,
+    "session_key": 9161,
+    "team_name": "Mercedes"
+  }
+]
