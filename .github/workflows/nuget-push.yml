@@ -17,8 +17,11 @@ jobs:
         with:
           dotnet-version: '8.0.x'
 
-      - name: Build and Pack
-        run: dotnet pack --configuration Release
+      - name: Build
+        run: dotnet build --configuration Release
+
+      - name: Pack
+        run: dotnet pack --configuration Release --no-build
 
       - name: Push to GitHub Packages
         run: dotnet nuget push "**/*.nupkg" --source "https://nuget.pkg.github.com/${{ github.repository_owner }}/index.json" --api-key ${{ secrets.GITHUB_TOKEN }} --skip-duplicate
