@@ -21,15 +21,15 @@ jobs:
       - name: Build
         run: dotnet build --configuration Release
 
-      # Develop ágon automatikusan hozzáad egy dev.X suffixes verziót
+      # Develop ágon automatikusan hozzáad egy dev.X suffixes verziót (pl. 1.0.0-dev.12)
       - name: Pack (Develop - Prerelease)
         if: github.ref == 'refs/heads/develop'
-        run: dotnet pack --configuration Release --no-build --version-suffix "dev.${{ github.run_number }}"
+        run: dotnet pack --configuration Release --no-build --output ./nupkg --version-suffix "dev.${{ github.run_number }}"
 
-      # Master ágon a sima verziót csomagolja (vagy megadható build szám is)
+      # Master ágon a stabil verziót csomagolja
       - name: Pack (Master - Release)
-        if: github.ref == 'refs/heads/master'
-        run: dotnet pack --configuration Release --no-build
+        if: github.ref == 'refs/heads/master' || github.ref == 'refs/heads'
+        run: dotnet pack --configuration Release --no-build --output ./nupkg
 
       - name: Push to GitHub Packages
-        run: dotnet nuget push "**/*.nupkg" --source "https://nuget.pkg.github.com/${{ github.repository_owner }}/index.json" --api-key ${{ secrets.GITHUB_TOKEN }} --skip-duplicate
+        run: dotnet nuget push "./nupkg/*.nupkg" --source "https://nuget.pkg.github.com/${{ github.repository_owner }}/index.json" --api-key ${{ secrets.GITHUB_TOKEN }} --skip-duplicate
