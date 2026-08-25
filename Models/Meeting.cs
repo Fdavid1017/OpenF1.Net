@@ -12,6 +12,11 @@ public class Meeting
     public int CircuitKey { get; init; }
     /// <summary>A URL to a JSON containing detailed circuit info. See FastF1 documentation for details. Data provided by MultiViewer.</summary>
     public string CircuitInfoUrl { get; init; } = "";
+    /// <summary>
+    /// Detailed circuit information (corners, marshal posts, pit lane loss, track outline, ...), fetched
+    /// from <see cref="CircuitInfoUrl"/>. Null unless the query was built with .IncludeCircuitInfo().
+    /// </summary>
+    public CircuitInfo? CircuitInfo { get; internal set; }
     /// <summary>The short or common name of the circuit where the event takes place.</summary>
     public string CircuitShortName { get; init; } = "";
     /// <summary>The type of the circuit ("Permanent" or "Temporary - Street/Road").</summary>

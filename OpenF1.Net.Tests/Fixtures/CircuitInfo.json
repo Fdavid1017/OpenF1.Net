@@ -1,0 +1,38 @@
+{
+  "pitLoss": { "normal": "25.43", "sc": "16.11", "vsc": "18.40" },
+  "corners": [
+    { "angle": 153.78733177568182, "length": 9070.401302490232, "number": 1, "trackPosition": { "x": -569.5805053710938, "y": 8153.724609375 } },
+    { "angle": -13.83584308210785, "length": 9637.864343261717, "number": 2, "trackPosition": { "x": -146.75457763671875, "y": 8474.9814453125 } }
+  ],
+  "marshalLights": [
+    { "angle": -166.00688809948863, "length": 0, "number": 1, "trackPosition": { "x": -1393, "y": -874 } }
+  ],
+  "marshalSectors": [
+    { "angle": 176.2678819489212, "length": 57336.2854925537, "number": 1, "trackPosition": { "x": -1414.551025390625, "y": -1183.938720703125 } }
+  ],
+  "candidateLap": {
+    "driverNumber": "3",
+    "lapNumber": 2,
+    "lapStartDate": "2021-09-10T12:32:32.752000",
+    "lapStartSessionTime": 1023.005,
+    "lapTime": 85.995,
+    "session": "FP1",
+    "sessionStartTime": 870.359
+  },
+  "circuitKey": 39,
+  "circuitName": "Monza",
+  "countryIocCode": "ITA",
+  "countryKey": 13,
+  "countryName": "Italy",
+  "location": "Monza",
+  "meetingKey": "1076",
+  "meetingName": "Italian Grand Prix",
+  "meetingOfficialName": null,
+  "miniSectorsIndexes": [33, 70, 83],
+  "raceDate": "2021-09-12",
+  "rotation": 95,
+  "round": 14,
+  "x": [-1393, -1384, -1383],
+  "y": [-874, -794, -787],
+  "year": 2021
+}

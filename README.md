@@ -106,6 +106,20 @@ var sameResult = await client.GetDriversAsync()
     .Where(x => x.DriverNumber == 1 || x.DriverNumber == 11 || x.DriverNumber == 44);
 ```
 
+### Pálya részletek (`IncludeCircuitInfo`)
+
+A `GetMeetingsAsync()` lekérdezésre láncolható `.IncludeCircuitInfo()` opcionálisan lekéri az egyes meetingekhez tartozó részletes pályaadatokat (kanyarok, marsall-posztok, boxutca-veszteség, pályakontúr) a `Meeting.CircuitInfoUrl`-ről — ezt nem az OpenF1 API szolgáltatja, hanem a MultiViewer. Meetingenként egy plusz HTTP kérést jelent, ezért alapból ki van kapcsolva: `.IncludeCircuitInfo()` nélkül a `Meeting.CircuitInfo` property `null`.
+
+```csharp
+var meetings = await client.GetMeetingsAsync().IncludeCircuitInfo();
+
+foreach (var meeting in meetings)
+{
+    var info = meeting.CircuitInfo!;
+    Console.WriteLine($"{info.CircuitName}: {info.Corners.Length} kanyar, boxutca-veszteség {info.PitLoss.Normal}s");
+}
+```
+
 ### Enumok
 
 Néhány mező (`Flag`, `TyreCompound`, `SessionType`, `Category`, `Scope`, ...) erősen típusos enumként érkezik, és a válaszban lévő nyers API string (pl. `"BLACK AND WHITE"`) automatikusan a megfelelő tagra (`Flag.BlackAndWhite`) van leképezve — szűréskor ugyanez fordítva történik.
