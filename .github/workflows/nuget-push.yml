@@ -4,6 +4,7 @@ on:
   push:
     branches:
       - master
+      - develop
 
 jobs:
   build-and-publish:
@@ -20,7 +21,14 @@ jobs:
       - name: Build
         run: dotnet build --configuration Release
 
-      - name: Pack
+      # Develop ágon automatikusan hozzáad egy dev.X suffixes verziót
+      - name: Pack (Develop - Prerelease)
+        if: github.ref == 'refs/heads/develop'
+        run: dotnet pack --configuration Release --no-build --version-suffix "dev.${{ github.run_number }}"
+
+      # Master ágon a sima verziót csomagolja (vagy megadható build szám is)
+      - name: Pack (Master - Release)
+        if: github.ref == 'refs/heads/master'
         run: dotnet pack --configuration Release --no-build
 
       - name: Push to GitHub Packages

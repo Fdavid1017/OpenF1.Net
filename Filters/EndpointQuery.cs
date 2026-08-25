@@ -38,5 +38,10 @@ public class EndpointQuery<TFields, TModel>
         return this;
     }
 
-    public TaskAwaiter<TModel[]> GetAwaiter() => _execute(_builder.ToQueryString(), _ct).GetAwaiter();
+    protected CancellationToken CancellationToken => _ct;
+
+    /// <summary>Runs the built query. Virtual so a subclass (e.g. MeetingsQuery) can layer post-processing on the result before it's awaited.</summary>
+    protected virtual Task<TModel[]> ExecuteAsync() => _execute(_builder.ToQueryString(), _ct);
+
+    public TaskAwaiter<TModel[]> GetAwaiter() => ExecuteAsync().GetAwaiter();
 }
