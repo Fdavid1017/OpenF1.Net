@@ -21,14 +21,18 @@ jobs:
       - name: Build
         run: dotnet build --configuration Release
 
-      # Develop ágon automatikusan hozzáad egy dev.X suffixes verziót (pl. 1.0.0-dev.12)
+      # Develop ágon időbélyeg alapján állít be egyedi verzió-utótagot (pl. dev.20260825171044)
+      - name: Set Version Suffix (Develop)
+        if: github.ref == 'refs/heads/develop'
+        run: echo "BUILD_SUFFIX=dev.$(date +'%Y%m%d%H%M%S')" >> $GITHUB_ENV
+
       - name: Pack (Develop - Prerelease)
         if: github.ref == 'refs/heads/develop'
-        run: dotnet pack --configuration Release --no-build --output ./nupkg --version-suffix "dev.${{ github.run_number }}"
+        run: dotnet pack --configuration Release --no-build --output ./nupkg --version-suffix "${{ env.BUILD_SUFFIX }}"
 
       # Master ágon a stabil verziót csomagolja
       - name: Pack (Master - Release)
-        if: github.ref == 'refs/heads/master' || github.ref == 'refs/heads'
+        if: github.ref == 'refs/heads/master'
         run: dotnet pack --configuration Release --no-build --output ./nupkg
 
       - name: Push to GitHub Packages
