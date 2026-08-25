@@ -3,7 +3,7 @@ using OpenF1.Net.Models;
 
 namespace OpenF1.Net;
 
-public partial class OpenF1
+public partial class OpenF1Client
 {
     /// <summary>Championship standings for teams. Only available for race sessions.</summary>
     public ChampionshipTeamsQuery GetChampionshipTeamsAsync(CancellationToken ct = default) =>

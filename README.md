@@ -35,10 +35,10 @@ dotnet add reference path/to/OpenF1.Net/OpenF1.Net.csproj
 ```csharp
 using OpenF1.Net;
 
-await using var client = new OpenF1();
+await using var client = new OpenF1Client();
 ```
 
-Az `OpenF1` konstruktora opcionálisan elfogad egy `HttpClient`-et, egy `OpenF1Config`-ot és egy `ILogger`-t. Ha nem adsz meg `HttpClient`-et, a wrapper létrehoz és kezel egyet (dispose-olja `DisposeAsync()`-kor).
+Az `OpenF1Client` konstruktora opcionálisan elfogad egy `HttpClient`-et, egy `OpenF1Config`-ot és egy `ILogger`-t. Ha nem adsz meg `HttpClient`-et, a wrapper létrehoz és kezel egyet (dispose-olja `DisposeAsync()`-kor).
 
 ```csharp
 using Microsoft.Extensions.Logging;
@@ -46,9 +46,9 @@ using OpenF1.Net;
 
 var httpClient = new HttpClient();
 var config = new OpenF1Config { UseRateLimit = true }; // alapértelmezett
-ILogger logger = loggerFactory.CreateLogger<OpenF1>();
+ILogger logger = loggerFactory.CreateLogger<OpenF1Client>();
 
-await using var client = new OpenF1(httpClient, config, logger);
+await using var client = new OpenF1Client(httpClient, config, logger);
 ```
 
 > `UseRateLimit = false` esetén a hívó felelőssége a kérések ütemezése — egy valódi 429-es válasz így is `OpenF1RateLimitExceededException`-t dob.
@@ -188,7 +188,7 @@ using OpenF1.Net;
 using OpenF1.Net.Exceptions;
 using OpenF1.Net.Filters;
 
-await using var client = new OpenF1();
+await using var client = new OpenF1Client();
 
 try
 {

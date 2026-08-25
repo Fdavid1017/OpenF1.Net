@@ -4,7 +4,7 @@ using System.Runtime.CompilerServices;
 namespace OpenF1.Net.Filters;
 
 /// <summary>
-/// Deferred, chainable, directly awaitable query returned by every OpenF1 Get*Async method. No HTTP
+/// Deferred, chainable, directly awaitable query returned by every OpenF1Client Get*Async method. No HTTP
 /// call happens until the query is awaited, so .Where()/.And()/.WhereIn() can still be attached after
 /// the call. Each endpoint's own Query type is a thin subclass — this base holds all the plumbing.
 /// </summary>

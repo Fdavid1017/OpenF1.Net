@@ -6,7 +6,7 @@ namespace OpenF1.Net.Models.Enums;
 
 /// <summary>
 /// The scope of a race_control event (Track, Sector, Driver). Its converter is registered explicitly
-/// in OpenF1's JsonSerializerOptions rather than via [JsonConverter] here — see the note on Flag.
+/// in OpenF1Client's JsonSerializerOptions rather than via [JsonConverter] here — see the note on Flag.
 /// </summary>
 public enum Scope
 {

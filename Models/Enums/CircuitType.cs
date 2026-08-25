@@ -26,7 +26,7 @@ class CircuitTypeJsonConverter : JsonConverter<CircuitType>
         var raw = reader.GetString()!;
         return ApiValues.TryGetValue(raw, out var type)
             ? type
-            : throw new JsonException($"Unrecognized {nameof(CircuitType)} value '{raw}' — the confirmed value set is closed, re-check the OpenF1 docs.");
+            : throw new JsonException($"Unrecognized {nameof(CircuitType)} value '{raw}' — the confirmed value set is closed, re-check the OpenF1Client docs.");
     }
 
     public override void Write(Utf8JsonWriter writer, CircuitType value, JsonSerializerOptions options) =>

@@ -6,7 +6,7 @@ using OpenF1.Net.Models;
 
 namespace OpenF1.Net;
 
-public partial class OpenF1
+public partial class OpenF1Client
 {
     /// <summary>
     /// Information about meetings. A meeting refers to a Grand Prix or testing weekend and usually
@@ -27,7 +27,7 @@ public partial class OpenF1
     };
 
     /// <summary>
-    /// Fetches circuit info from a meeting's CircuitInfoUrl. Hosted by MultiViewer, not the OpenF1 API —
+    /// Fetches circuit info from a meeting's CircuitInfoUrl. Hosted by MultiViewer, not the OpenF1Client API —
     /// no rate limiting or openf1 error-detail parsing applies here.
     /// </summary>
     internal async Task<CircuitInfo> FetchCircuitInfoAsync(string url, CancellationToken ct)

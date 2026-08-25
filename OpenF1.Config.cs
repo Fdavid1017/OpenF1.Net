@@ -1,6 +1,6 @@
 namespace OpenF1.Net;
 
-/// <summary>Per-instance configuration for <see cref="OpenF1"/>.</summary>
+/// <summary>Per-instance configuration for <see cref="OpenF1Client"/>.</summary>
 public class OpenF1Config
 {
     /// <summary>

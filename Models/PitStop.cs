@@ -14,7 +14,7 @@ public class PitStop
     /// <summary>The unique identifier for the meeting. Use latest to identify the latest or current meeting.</summary>
     public int MeetingKey { get; init; }
     /// <summary>Same as LaneDuration. This field will be removed at the end of the 2026 season.</summary>
-    [Obsolete("Same as " + nameof(LaneDuration) + ". Removed at the end of the 2026 season, per the OpenF1 docs.")]
+    [Obsolete("Same as " + nameof(LaneDuration) + ". Removed at the end of the 2026 season, per the OpenF1Client docs.")]
     public double? PitDuration { get; init; }
     /// <summary>The unique identifier for the session. Use latest to identify the latest or current session.</summary>
     public int SessionKey { get; init; }

@@ -3,7 +3,7 @@ using OpenF1.Net.Models;
 
 namespace OpenF1.Net;
 
-public partial class OpenF1
+public partial class OpenF1Client
 {
     /// <summary>Some data about each car, at a sample rate of about 3.7 Hz.</summary>
     public CarDataQuery GetCarDataAsync(CancellationToken ct = default) =>

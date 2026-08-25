@@ -3,7 +3,7 @@ using OpenF1.Net.Models;
 
 namespace OpenF1.Net;
 
-public partial class OpenF1
+public partial class OpenF1Client
 {
     /// <summary>Detailed information about the drivers participating in a specific session.</summary>
     public DriversQuery GetDriversAsync(CancellationToken ct = default) =>

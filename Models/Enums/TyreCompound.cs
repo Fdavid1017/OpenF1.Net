@@ -26,7 +26,7 @@ class TyreCompoundJsonConverter : JsonConverter<TyreCompound>
         var raw = reader.GetString()!;
         return ApiValues.TryGetValue(raw, out var compound)
             ? compound
-            : throw new JsonException($"Unrecognized {nameof(TyreCompound)} value '{raw}' — the confirmed value set is closed, re-check the OpenF1 docs.");
+            : throw new JsonException($"Unrecognized {nameof(TyreCompound)} value '{raw}' — the confirmed value set is closed, re-check the OpenF1Client docs.");
     }
 
     public override void Write(Utf8JsonWriter writer, TyreCompound value, JsonSerializerOptions options) =>

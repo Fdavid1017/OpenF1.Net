@@ -3,7 +3,7 @@ using OpenF1.Net.Models;
 
 namespace OpenF1.Net;
 
-public partial class OpenF1
+public partial class OpenF1Client
 {
     /// <summary>Detailed information about individual laps.</summary>
     public LapsQuery GetLapsAsync(CancellationToken ct = default) =>

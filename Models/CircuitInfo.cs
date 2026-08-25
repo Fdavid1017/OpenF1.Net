@@ -3,7 +3,7 @@ namespace OpenF1.Net.Models;
 /// <summary>
 /// Detailed circuit information (corners, marshal posts, pit lane time loss, official track outline, ...).
 /// Populated on a <see cref="Meeting"/> only when the query is built with .IncludeCircuitInfo() — fetched
-/// from <see cref="Meeting.CircuitInfoUrl"/>, which is hosted by MultiViewer rather than the OpenF1 API itself.
+/// from <see cref="Meeting.CircuitInfoUrl"/>, which is hosted by MultiViewer rather than the OpenF1Client API itself.
 /// </summary>
 public class CircuitInfo
 {

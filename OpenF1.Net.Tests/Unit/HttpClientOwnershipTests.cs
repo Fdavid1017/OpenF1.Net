@@ -5,13 +5,13 @@ namespace OpenF1.Net.Tests.Unit;
 
 public class HttpClientOwnershipTests
 {
-    static HttpClient GetInternalHttpClient(OpenF1 api) =>
-        (HttpClient)typeof(OpenF1).GetField("_httpClient", BindingFlags.NonPublic | BindingFlags.Instance)!.GetValue(api)!;
+    static HttpClient GetInternalHttpClient(OpenF1Client api) =>
+        (HttpClient)typeof(OpenF1Client).GetField("_httpClient", BindingFlags.NonPublic | BindingFlags.Instance)!.GetValue(api)!;
 
     [Fact]
     public async Task Disposing_an_owned_HttpClient_disposes_it()
     {
-        var api = new OpenF1();
+        var api = new OpenF1Client();
         var httpClient = GetInternalHttpClient(api);
 
         await api.DisposeAsync();
@@ -25,7 +25,7 @@ public class HttpClientOwnershipTests
         var mockHttp = new MockHttpMessageHandler();
         mockHttp.When("https://api.openf1.org/v1/*").Respond("application/json", "[]");
         var externalClient = mockHttp.ToHttpClient();
-        var api = new OpenF1(externalClient);
+        var api = new OpenF1Client(externalClient);
 
         await api.DisposeAsync();
 

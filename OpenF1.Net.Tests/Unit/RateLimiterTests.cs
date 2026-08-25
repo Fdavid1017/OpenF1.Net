@@ -10,7 +10,7 @@ public class RateLimiterTests
     {
         var mockHttp = new MockHttpMessageHandler();
         mockHttp.When("https://api.openf1.org/v1/*").Respond("application/json", "[]");
-        var api = new OpenF1(mockHttp.ToHttpClient()); // UseRateLimit defaults to true
+        var api = new OpenF1Client(mockHttp.ToHttpClient()); // UseRateLimit defaults to true
 
         var stopwatch = Stopwatch.StartNew();
         await api.GetDriversAsync();
@@ -28,7 +28,7 @@ public class RateLimiterTests
     {
         var mockHttp = new MockHttpMessageHandler();
         mockHttp.When("https://api.openf1.org/v1/*").Respond("application/json", "[]");
-        var api = new OpenF1(mockHttp.ToHttpClient(), new OpenF1Config { UseRateLimit = false });
+        var api = new OpenF1Client(mockHttp.ToHttpClient(), new OpenF1Config { UseRateLimit = false });
 
         var stopwatch = Stopwatch.StartNew();
         await api.GetDriversAsync();

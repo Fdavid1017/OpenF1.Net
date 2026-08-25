@@ -13,7 +13,7 @@ public enum SegmentStatus
     Purple,
     Pitlane,
     /// <summary>
-    /// Covers raw values 2050/2052/2068 (the OpenF1 docs mark these "?" themselves) and any other
+    /// Covers raw values 2050/2052/2068 (the OpenF1Client docs mark these "?" themselves) and any other
     /// unrecognized future value.
     /// </summary>
     Unknown,

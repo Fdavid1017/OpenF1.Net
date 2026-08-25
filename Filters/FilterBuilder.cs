@@ -5,7 +5,7 @@ using System.Reflection;
 namespace OpenF1.Net.Filters;
 
 /// <summary>
-/// Parses filter expressions into the OpenF1 API's query-string grammar. TFields is a per-endpoint
+/// Parses filter expressions into the OpenF1Client API's query-string grammar. TFields is a per-endpoint
 /// marker class whose properties (never actually invoked — only the expression tree shape is read)
 /// declare which response fields are filterable.
 /// </summary>
@@ -89,7 +89,7 @@ public class FilterBuilder<TFields>
                 fieldName = name;
             else if (fieldName != name)
                 throw new NotSupportedException(
-                    $"'||' across different fields ('{fieldName}' vs '{name}') isn't supported — the OpenF1 API only allows OR via repeating the SAME query key, e.g. driver_number=1&driver_number=40.");
+                    $"'||' across different fields ('{fieldName}' vs '{name}') isn't supported — the OpenF1Client API only allows OR via repeating the SAME query key, e.g. driver_number=1&driver_number=40.");
 
             var right = leaf.Right is UnaryExpression { NodeType: ExpressionType.Convert } ru ? ru.Operand : leaf.Right;
             var value = Expression.Lambda(right).Compile().DynamicInvoke();

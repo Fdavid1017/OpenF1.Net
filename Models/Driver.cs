@@ -6,7 +6,7 @@ public class Driver
     /// <summary>The driver's name, as displayed on TV.</summary>
     public string BroadcastName { get; init; } = "";
     /// <summary>A code that uniquely identifies the country. This field will be removed at the end of the 2026 season.</summary>
-    [Obsolete("Removed at the end of the 2026 season, per the OpenF1 docs.")]
+    [Obsolete("Removed at the end of the 2026 season, per the OpenF1Client docs.")]
     public string? CountryCode { get; init; }
     /// <summary>The unique number assigned to an F1 driver for the season (cf. Wikipedia).</summary>
     public int DriverNumber { get; init; }

@@ -9,8 +9,8 @@ using OpenF1.Net.Models.Enums;
 
 namespace OpenF1.Net;
 
-/// <summary>.NET wrapper for the OpenF1 API (https://openf1.org/), providing real-time and historical Formula 1 data.</summary>
-public partial class OpenF1 : IAsyncDisposable
+/// <summary>.NET wrapper for the OpenF1Client API (https://openf1.org/), providing real-time and historical Formula 1 data.</summary>
+public partial class OpenF1Client : IAsyncDisposable
 {
     const string BaseUrl = "https://api.openf1.org/v1";
     const string NoResultsDetail = "No results found.";
@@ -29,7 +29,7 @@ public partial class OpenF1 : IAsyncDisposable
     readonly ILogger _logger;
     readonly RateLimiter? _rateLimiter;
 
-    public OpenF1(HttpClient? httpClient = null, OpenF1Config? config = null, ILogger? logger = null)
+    public OpenF1Client(HttpClient? httpClient = null, OpenF1Config? config = null, ILogger? logger = null)
     {
         _ownsHttpClient = httpClient is null;
         _httpClient = httpClient ?? new HttpClient();
@@ -58,7 +58,7 @@ public partial class OpenF1 : IAsyncDisposable
             await _rateLimiter.WaitAsync(ct).ConfigureAwait(false);
 
         var url = string.IsNullOrEmpty(queryString) ? $"{BaseUrl}/{path}" : $"{BaseUrl}/{path}?{queryString}";
-        _logger.LogInformation("OpenF1 request: GET {Url}", url);
+        _logger.LogInformation("OpenF1Client request: GET {Url}", url);
 
         using var response = await _httpClient.GetAsync(url, ct).ConfigureAwait(false);
 
@@ -76,17 +76,17 @@ public partial class OpenF1 : IAsyncDisposable
 
         if (response.StatusCode == HttpStatusCode.TooManyRequests)
         {
-            _logger.LogWarning("OpenF1 rate limit exceeded: {Detail}", detail);
+            _logger.LogWarning("OpenF1Client rate limit exceeded: {Detail}", detail);
             throw new OpenF1RateLimitExceededException(detail);
         }
 
         if (response.StatusCode is HttpStatusCode.Unauthorized or HttpStatusCode.Forbidden)
         {
-            _logger.LogError("OpenF1 request requires a subscription: {StatusCode} {Detail}", response.StatusCode, detail);
+            _logger.LogError("OpenF1Client request requires a subscription: {StatusCode} {Detail}", response.StatusCode, detail);
             throw new OpenF1SubscriptionRequiredException(response.StatusCode, detail);
         }
 
-        _logger.LogError("OpenF1 request failed: {StatusCode} {Detail}", response.StatusCode, detail);
+        _logger.LogError("OpenF1Client request failed: {StatusCode} {Detail}", response.StatusCode, detail);
         throw new OpenF1ApiException(response.StatusCode, detail);
     }
 

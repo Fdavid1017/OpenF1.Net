@@ -6,7 +6,7 @@ namespace OpenF1.Net.Models.Enums;
 
 /// <summary>
 /// Type of flag displayed (GREEN, YELLOW, DOUBLE YELLOW, CHEQUERED, ...). Its converter is registered
-/// explicitly in OpenF1's JsonSerializerOptions rather than via [JsonConverter] here — Nullable&lt;T&gt;
+/// explicitly in OpenF1Client's JsonSerializerOptions rather than via [JsonConverter] here — Nullable&lt;T&gt;
 /// resolution always looks up a converter for the plain T first, so a converter attributed here would
 /// need to target Flag rather than Flag?, which can't express the "unrecognized value -&gt; null" fallback.
 /// </summary>

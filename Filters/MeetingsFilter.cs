@@ -31,7 +31,7 @@ public class MeetingsQuery(
 
     /// <summary>
     /// Also fetches each meeting's <see cref="Meeting.CircuitInfo"/> from its <see cref="Meeting.CircuitInfoUrl"/>
-    /// — one extra HTTP request per meeting, sent to MultiViewer rather than the OpenF1 API.
+    /// — one extra HTTP request per meeting, sent to MultiViewer rather than the OpenF1Client API.
     /// </summary>
     public MeetingsQuery IncludeCircuitInfo()
     {

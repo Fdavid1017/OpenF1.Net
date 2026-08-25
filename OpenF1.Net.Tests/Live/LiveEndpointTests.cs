@@ -1,18 +1,18 @@
 namespace OpenF1.Net.Tests.Live;
 
 /// <summary>
-/// One shared <see cref="OpenF1"/> instance for the whole class, so its built-in rate limiter actually
+/// One shared <see cref="OpenF1Client"/> instance for the whole class, so its built-in rate limiter actually
 /// paces every test method's real HTTP call to the API's 3 requests/second cap — separate instances
 /// (and therefore separate limiters) racing in parallel would each think they're the only caller and
 /// trip a real 429.
 /// </summary>
 public class LiveApiFixture : IAsyncLifetime
 {
-    public OpenF1 Api { get; private set; } = null!;
+    public OpenF1Client Api { get; private set; } = null!;
 
     public Task InitializeAsync()
     {
-        Api = new OpenF1();
+        Api = new OpenF1Client();
         return Task.CompletedTask;
     }
 
@@ -34,7 +34,7 @@ public class LiveEndpointTests(LiveApiFixture fixture) : IClassFixture<LiveApiFi
     const int MeetingKey = 1219;
     const int DriverNumber = 1;
 
-    OpenF1 _api => fixture.Api;
+    OpenF1Client _api => fixture.Api;
 
     [Fact]
     public async Task CarData_deserializes()
