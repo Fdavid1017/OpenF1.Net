@@ -9,6 +9,8 @@ public class Stint
     public TyreCompound Compound { get; init; }
     /// <summary>The unique number assigned to an F1 driver for the season (cf. Wikipedia).</summary>
     public int DriverNumber { get; init; }
+    /// <summary>The driver this stint belongs to. Null unless the query was built with .IncludeDriverDetails().</summary>
+    public Driver? DriverDetails { get; internal set; }
     /// <summary>Number of the last completed lap in this stint. Null while the stint is still in progress.</summary>
     public int? LapEnd { get; init; }
     /// <summary>Number of the initial lap in this stint (starts at 1). Observed null on live data despite the docs implying it's always set.</summary>

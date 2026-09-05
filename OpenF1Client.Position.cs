@@ -7,5 +7,5 @@ public partial class OpenF1Client
 {
     /// <summary>Driver positions throughout a session, including initial placement and subsequent changes.</summary>
     public PositionQuery GetPositionAsync(CancellationToken ct = default) =>
-        new((qs, c) => ExecuteAsync<Position>("position", qs, c), ct);
+        new((qs, c) => ExecuteAsync<Position>("position", qs, c), FetchDriverDetailsAsync, ct);
 }

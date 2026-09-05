@@ -120,6 +120,31 @@ foreach (var meeting in meetings)
 }
 ```
 
+### Driver-képek (`ResolveImages`)
+
+A `GetDriversAsync()` lekérdezésre láncolható `.ResolveImages()` opcionálisan feloldja driverenként a legnagyobb elérhető felbontású hivatalos F1 headshot URL-t, és kitölti a `Driver.FullBodyUrlLeft` / `Driver.FullBodyUrlRight` mezőket a driver aktuális csapatához tartozó egész alakos, bal illetve jobb oldali képekkel. Ehhez nem az OpenF1 API-t hívjuk, hanem a media.formula1.com-ot (elsődleges forrás) és az assets.multiviewer.dev-et (tartalék, ha a hivatalos kép nem található) — kizárólag `HEAD` kéréssel ellenőrizve, hogy egy adott URL létezik-e, a kép ténylegesen sosem töltődik le. Ez driverenként több extra HTTP kérést jelenthet, ezért alapból ki van kapcsolva: `.ResolveImages()` nélkül a `Driver.HeadshotUrl` az OpenF1 API által visszaadott érték marad, a `FullBodyUrlLeft`/`FullBodyUrlRight` pedig `null`.
+
+```csharp
+var drivers = await client.GetDriversAsync().ResolveImages();
+
+foreach (var driver in drivers)
+{
+    Console.WriteLine($"{driver.FullName}: {driver.HeadshotUrl}");
+    Console.WriteLine($"  bal: {driver.FullBodyUrlLeft}, jobb: {driver.FullBodyUrlRight}");
+}
+```
+
+### Csapat autó-képek (`GetChampionshipTeamsAsync`)
+
+A `GetChampionshipTeamsAsync()` minden csapathoz automatikusan (opt-in hívás nélkül) feltölti a `ChampionshipTeam.CarLeftUrl` / `ChampionshipTeam.CarRightUrl` mezőket az aktuális autó bal, illetve jobb oldali renderjének URL-jével — a media.formula1.com-ról, `HEAD` kéréssel ellenőrizve a létezést, a kép letöltése nélkül. Ha egy csapathoz nem található megfelelő kép, a mező `null` marad.
+
+```csharp
+var teams = await client.GetChampionshipTeamsAsync();
+
+foreach (var team in teams)
+    Console.WriteLine($"{team.TeamName}: {team.CarLeftUrl}");
+```
+
 ### Enumok
 
 Néhány mező (`Flag`, `TyreCompound`, `SessionType`, `Category`, `Scope`, ...) erősen típusos enumként érkezik, és a válaszban lévő nyers API string (pl. `"BLACK AND WHITE"`) automatikusan a megfelelő tagra (`Flag.BlackAndWhite`) van leképezve — szűréskor ugyanez fordítva történik.
@@ -233,3 +258,60 @@ Az `OpenF1.Net.Tests` projekt unit teszteket (rögzített JSON fixture-ökkel, `
 - OpenF1 API: https://openf1.org/
 - OpenF1 API dokumentáció: https://openf1.org/docs
 - OpenF1 forrás: https://github.com/br-g/openf1
+
+## Release-ek kezelése (git-cliff)
+
+A verziózás [Conventional Commits](https://www.conventionalcommits.org/) alapú, a
+changelog és a következő verziószám generálását a [git-cliff](https://git-cliff.org/docs/)
+végzi. A konfiguráció a repo gyökerében lévő `cliff.toml`.
+
+### Commit konvenció
+
+A `feat:` minor, a `fix:`/`perf:`/`refactor:` patch verziót emel, a `BREAKING CHANGE:`
+lábjegyzet (vagy `feat!:`) major-t. A `chore:` és `style:` commitok kimaradnak a changelogból.
+
+### Helyi használat
+
+```bash
+npx git-cliff --bumped-version          # mi lenne a következő verzió
+npx git-cliff --unreleased              # mi kerülne a következő release-be
+npx git-cliff --tag v1.2.0 -o CHANGELOG.md
+```
+
+(Alternatív telepítés: `winget install git-cliff`, `brew install git-cliff` vagy
+`cargo install git-cliff`.)
+
+### Release kiadása
+
+A `master` ágon a **Release** workflow (`.github/workflows/release.yml`) indítható
+kézzel (Actions → Release → Run workflow):
+
+1. kiszámolja a következő verziót (vagy a megadott `version` inputot használja),
+2. frissíti a `CHANGELOG.md`-t és commitolja `chore(release): prepare for vX.Y.Z` néven,
+3. létrehozza és pusholja a `vX.Y.Z` taget,
+4. `dotnet pack -p:Version=X.Y.Z` és push a GitHub Packages-re,
+5. GitHub Release-t hoz létre a generált release-jegyzettel.
+
+A `dry_run` inputtal minden publikálás nélkül megnézhető a számolt verzió és a changelog.
+
+### Csomag release note
+
+A workflow-k a `git cliff --unreleased --strip all` kimenetét `RELEASE_NOTES.md`-be írják,
+a csproj `SetPackageReleaseNotes` targetje pedig ezt tölti be a nuspec `<releaseNotes>`
+mezőjébe. Így a NuGet csomag oldalán a "Release Notes" szekció automatikusan az adott
+verzióhoz tartozó commitokat mutatja. Ha a `RELEASE_NOTES.md` nincs a repo gyökerében
+(sima lokális build), a mező üresen marad.
+
+Lokálisan így reprodukálható (a `&&` Windows PowerShell 5.1-ben nem működik,
+ezért két külön parancs):
+
+```bash
+npx git-cliff --unreleased --strip all -o RELEASE_NOTES.md
+```
+
+```bash
+dotnet pack OpenF1.Net.csproj -c Release -o ./nupkg
+```
+
+A `develop` ágra pusholt commitokból továbbra is automatikus prerelease csomag készül
+(`.github/workflows/nuget-push.yml`).

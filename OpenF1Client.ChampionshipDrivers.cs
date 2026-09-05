@@ -7,5 +7,5 @@ public partial class OpenF1Client
 {
     /// <summary>Championship standings for drivers. Only available for race sessions.</summary>
     public ChampionshipDriversQuery GetChampionshipDriversAsync(CancellationToken ct = default) =>
-        new((qs, c) => ExecuteAsync<ChampionshipDriver>("championship_drivers", qs, c), ct);
+        new((qs, c) => ExecuteAsync<ChampionshipDriver>("championship_drivers", qs, c), FetchDriverDetailsAsync, ct);
 }

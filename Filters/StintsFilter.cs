@@ -15,5 +15,8 @@ public class StintsFilterFields
     public int TyreAgeAtStart => throw new NotSupportedException();
 }
 
-public class StintsQuery(Func<string, CancellationToken, Task<Stint[]>> execute, CancellationToken ct)
-    : EndpointQuery<StintsFilterFields, Stint>(execute, ct);
+public class StintsQuery(
+    Func<string, CancellationToken, Task<Stint[]>> execute,
+    Func<int, int, bool, CancellationToken, Task<Driver?>> fetchDriverDetails,
+    CancellationToken ct
+) : DriverEnrichableQuery<StintsFilterFields, Stint>(execute, fetchDriverDetails, s => s.SessionKey, s => s.DriverNumber, (s, d) => s.DriverDetails = d, ct);

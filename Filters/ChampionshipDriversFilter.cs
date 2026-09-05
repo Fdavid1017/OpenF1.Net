@@ -13,5 +13,8 @@ public class ChampionshipDriversFilterFields
     public SessionKeyRef SessionKey => throw new NotSupportedException();
 }
 
-public class ChampionshipDriversQuery(Func<string, CancellationToken, Task<ChampionshipDriver[]>> execute, CancellationToken ct)
-    : EndpointQuery<ChampionshipDriversFilterFields, ChampionshipDriver>(execute, ct);
+public class ChampionshipDriversQuery(
+    Func<string, CancellationToken, Task<ChampionshipDriver[]>> execute,
+    Func<int, int, bool, CancellationToken, Task<Driver?>> fetchDriverDetails,
+    CancellationToken ct
+) : DriverEnrichableQuery<ChampionshipDriversFilterFields, ChampionshipDriver>(execute, fetchDriverDetails, c => c.SessionKey, c => c.DriverNumber, (c, d) => c.DriverDetails = d, ct);

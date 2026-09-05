@@ -17,5 +17,8 @@ public class RaceControlFilterFields
     public SessionKeyRef SessionKey => throw new NotSupportedException();
 }
 
-public class RaceControlQuery(Func<string, CancellationToken, Task<RaceControlMessage[]>> execute, CancellationToken ct)
-    : EndpointQuery<RaceControlFilterFields, RaceControlMessage>(execute, ct);
+public class RaceControlQuery(
+    Func<string, CancellationToken, Task<RaceControlMessage[]>> execute,
+    Func<int, int, bool, CancellationToken, Task<Driver?>> fetchDriverDetails,
+    CancellationToken ct
+) : DriverEnrichableQuery<RaceControlFilterFields, RaceControlMessage>(execute, fetchDriverDetails, r => r.SessionKey, r => r.DriverNumber, (r, d) => r.DriverDetails = d, ct);

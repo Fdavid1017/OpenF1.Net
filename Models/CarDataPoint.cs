@@ -11,6 +11,8 @@ public class CarDataPoint
     public DateTime Date { get; init; }
     /// <summary>The unique number assigned to an F1 driver for the season (cf. Wikipedia).</summary>
     public int DriverNumber { get; init; }
+    /// <summary>The driver this data point belongs to. Null unless the query was built with .IncludeDriverDetails().</summary>
+    public Driver? DriverDetails { get; internal set; }
     /// <summary>The Drag Reduction System (DRS) status.</summary>
     public DrsStatus Drs { get; init; }
     /// <summary>The unique identifier for the meeting. Use latest to identify the latest or current meeting.</summary>

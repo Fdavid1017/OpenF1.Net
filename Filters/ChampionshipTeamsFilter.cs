@@ -13,5 +13,19 @@ public class ChampionshipTeamsFilterFields
     public string TeamName => throw new NotSupportedException();
 }
 
-public class ChampionshipTeamsQuery(Func<string, CancellationToken, Task<ChampionshipTeam[]>> execute, CancellationToken ct)
-    : EndpointQuery<ChampionshipTeamsFilterFields, ChampionshipTeam>(execute, ct);
+public class ChampionshipTeamsQuery(
+    Func<string, CancellationToken, Task<ChampionshipTeam[]>> execute,
+    Func<ChampionshipTeam, CancellationToken, Task> resolveCarImages,
+    CancellationToken ct
+) : EndpointQuery<ChampionshipTeamsFilterFields, ChampionshipTeam>(execute, ct)
+{
+    protected override async Task<ChampionshipTeam[]> ExecuteAsync()
+    {
+        var teams = await base.ExecuteAsync().ConfigureAwait(false);
+
+        foreach (var team in teams)
+            await resolveCarImages(team, CancellationToken).ConfigureAwait(false);
+
+        return teams;
+    }
+}

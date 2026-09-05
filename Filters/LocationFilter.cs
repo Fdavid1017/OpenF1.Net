@@ -13,5 +13,8 @@ public class LocationFilterFields
     public int Z => throw new NotSupportedException();
 }
 
-public class LocationQuery(Func<string, CancellationToken, Task<LocationPoint[]>> execute, CancellationToken ct)
-    : EndpointQuery<LocationFilterFields, LocationPoint>(execute, ct);
+public class LocationQuery(
+    Func<string, CancellationToken, Task<LocationPoint[]>> execute,
+    Func<int, int, bool, CancellationToken, Task<Driver?>> fetchDriverDetails,
+    CancellationToken ct
+) : DriverEnrichableQuery<LocationFilterFields, LocationPoint>(execute, fetchDriverDetails, l => l.SessionKey, l => l.DriverNumber, (l, d) => l.DriverDetails = d, ct);

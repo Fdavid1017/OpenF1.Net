@@ -11,6 +11,11 @@ public class RaceControlMessage
     public DateTime Date { get; init; }
     /// <summary>The unique number assigned to an F1 driver for the season (cf. Wikipedia).</summary>
     public int? DriverNumber { get; init; }
+    /// <summary>
+    /// The driver named by DriverNumber, if any. Null unless the query was built with .IncludeDriverDetails(),
+    /// and always null when DriverNumber itself is null (this message isn't tied to a specific driver).
+    /// </summary>
+    public Driver? DriverDetails { get; internal set; }
     /// <summary>Type of flag displayed (GREEN, YELLOW, DOUBLE YELLOW, CHEQUERED, ...).</summary>
     public Flag? Flag { get; init; }
     /// <summary>The sequential number of the lap within the session (starts at 1), in a race.</summary>

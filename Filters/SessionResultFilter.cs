@@ -15,5 +15,8 @@ public class SessionResultFilterFields
     // duration/gap_to_leader intentionally absent — polymorphic wrapper types aren't filterable
 }
 
-public class SessionResultQuery(Func<string, CancellationToken, Task<SessionResult[]>> execute, CancellationToken ct)
-    : EndpointQuery<SessionResultFilterFields, SessionResult>(execute, ct);
+public class SessionResultQuery(
+    Func<string, CancellationToken, Task<SessionResult[]>> execute,
+    Func<int, int, bool, CancellationToken, Task<Driver?>> fetchDriverDetails,
+    CancellationToken ct
+) : DriverEnrichableQuery<SessionResultFilterFields, SessionResult>(execute, fetchDriverDetails, r => r.SessionKey, r => r.DriverNumber, (r, d) => r.DriverDetails = d, ct);

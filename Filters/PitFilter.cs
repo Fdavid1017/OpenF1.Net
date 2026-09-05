@@ -13,5 +13,8 @@ public class PitFilterFields
     public double StopDuration => throw new NotSupportedException();
 }
 
-public class PitQuery(Func<string, CancellationToken, Task<PitStop[]>> execute, CancellationToken ct)
-    : EndpointQuery<PitFilterFields, PitStop>(execute, ct);
+public class PitQuery(
+    Func<string, CancellationToken, Task<PitStop[]>> execute,
+    Func<int, int, bool, CancellationToken, Task<Driver?>> fetchDriverDetails,
+    CancellationToken ct
+) : DriverEnrichableQuery<PitFilterFields, PitStop>(execute, fetchDriverDetails, p => p.SessionKey, p => p.DriverNumber, (p, d) => p.DriverDetails = d, ct);

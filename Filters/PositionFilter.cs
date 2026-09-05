@@ -11,5 +11,8 @@ public class PositionFilterFields
     public SessionKeyRef SessionKey => throw new NotSupportedException();
 }
 
-public class PositionQuery(Func<string, CancellationToken, Task<Position[]>> execute, CancellationToken ct)
-    : EndpointQuery<PositionFilterFields, Position>(execute, ct);
+public class PositionQuery(
+    Func<string, CancellationToken, Task<Position[]>> execute,
+    Func<int, int, bool, CancellationToken, Task<Driver?>> fetchDriverDetails,
+    CancellationToken ct
+) : DriverEnrichableQuery<PositionFilterFields, Position>(execute, fetchDriverDetails, p => p.SessionKey, p => p.DriverNumber, (p, d) => p.DriverDetails = d, ct);

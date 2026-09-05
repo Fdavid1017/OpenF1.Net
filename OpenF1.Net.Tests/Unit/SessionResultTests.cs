@@ -1,4 +1,5 @@
 using OpenF1.Net.Tests.TestHelpers;
+using RichardSzalay.MockHttp;
 
 namespace OpenF1.Net.Tests.Unit;
 
@@ -47,5 +48,27 @@ public class SessionResultTests
         Assert.Equal(0.145, qualifying.GapToLeader.Q1);
         Assert.Equal(0.221, qualifying.GapToLeader.Q2);
         Assert.Null(qualifying.GapToLeader.Q3);
+    }
+
+    [Fact]
+    public async Task IncludeDriverDetails_keys_the_lookup_by_session_and_driver_number_together()
+    {
+        var (api, mockHttp) = MockHttpFactory.ForFixture("session_result", "SessionResult.json");
+        const string verstappenOnly = """[{"driver_number":1,"last_name":"Verstappen","session_key":9161,"meeting_key":1219}]""";
+        const string perezOnly = """[{"driver_number":11,"last_name":"Perez","session_key":9161,"meeting_key":1219}]""";
+        const string hamiltonOnly = """[{"driver_number":44,"last_name":"Hamilton","session_key":9161,"meeting_key":1219}]""";
+        // driver_number=63 exists only under session_key=9160 in the fixture — a different session than the others.
+        const string russellOnly = """[{"driver_number":63,"last_name":"Russell","session_key":9160,"meeting_key":1219}]""";
+        mockHttp.When("https://api.openf1.org/v1/drivers?session_key=9161&driver_number=1").Respond("application/json", verstappenOnly);
+        mockHttp.When("https://api.openf1.org/v1/drivers?session_key=9161&driver_number=11").Respond("application/json", perezOnly);
+        mockHttp.When("https://api.openf1.org/v1/drivers?session_key=9161&driver_number=44").Respond("application/json", hamiltonOnly);
+        mockHttp.When("https://api.openf1.org/v1/drivers?session_key=9160&driver_number=63").Respond("application/json", russellOnly);
+
+        var data = await api.GetSessionResultAsync().IncludeDriverDetails();
+
+        Assert.Equal("Verstappen", data[0].DriverDetails!.LastName);
+        Assert.Equal("Perez", data[1].DriverDetails!.LastName);
+        Assert.Equal("Hamilton", data[2].DriverDetails!.LastName);
+        Assert.Equal("Russell", data[3].DriverDetails!.LastName);
     }
 }

@@ -23,5 +23,8 @@ public class LapsFilterFields
     // segments_sector_1/2/3 intentionally absent — arrays aren't filterable
 }
 
-public class LapsQuery(Func<string, CancellationToken, Task<Lap[]>> execute, CancellationToken ct)
-    : EndpointQuery<LapsFilterFields, Lap>(execute, ct);
+public class LapsQuery(
+    Func<string, CancellationToken, Task<Lap[]>> execute,
+    Func<int, int, bool, CancellationToken, Task<Driver?>> fetchDriverDetails,
+    CancellationToken ct
+) : DriverEnrichableQuery<LapsFilterFields, Lap>(execute, fetchDriverDetails, l => l.SessionKey, l => l.DriverNumber, (l, d) => l.DriverDetails = d, ct);

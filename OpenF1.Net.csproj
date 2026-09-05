@@ -8,11 +8,26 @@
     <Title>OpenF1.Net</Title>
     <Company />
     <Description>.Net wrapper for the https://github.com/br-g/openf1 project</Description>
+    <!-- Alapértelmezett verzió; a release workflow felülírja: dotnet pack -p:Version=x.y.z -->
+    <Version>0.1.0</Version>
+    <RepositoryUrl>https://github.com/Fdavid1017/OpenF1.Net</RepositoryUrl>
+    <RepositoryType>git</RepositoryType>
+    <PackageProjectUrl>https://github.com/Fdavid1017/OpenF1.Net</PackageProjectUrl>
   </PropertyGroup>
 
   <ItemGroup>
     <PackageReference Include="Microsoft.Extensions.Logging.Abstractions" Version="10.0.0" />
   </ItemGroup>
+
+  <!-- A csomag release note-ja a git-cliff által generált RELEASE_NOTES.md-ből jön.
+       Ha a fájl nincs ott (sima lokális build), a property üresen marad. -->
+  <Target Name="SetPackageReleaseNotes"
+          BeforeTargets="GenerateNuspec"
+          Condition="Exists('$(MSBuildProjectDirectory)/RELEASE_NOTES.md')">
+    <PropertyGroup>
+      <PackageReleaseNotes>$([System.IO.File]::ReadAllText('$(MSBuildProjectDirectory)/RELEASE_NOTES.md'))</PackageReleaseNotes>
+    </PropertyGroup>
+  </Target>
 
   <ItemGroup>
     <Compile Remove="OpenF1.Net.Tests\**" />
