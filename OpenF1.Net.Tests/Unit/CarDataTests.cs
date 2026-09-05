@@ -1,5 +1,6 @@
 using OpenF1.Net.Models.Enums;
 using OpenF1.Net.Tests.TestHelpers;
+using RichardSzalay.MockHttp;
 
 namespace OpenF1.Net.Tests.Unit;
 
@@ -28,5 +29,28 @@ public class CarDataTests
 
         Assert.Equal(DrsStatus.Eligible, data[1].Drs);
         Assert.Equal(DrsStatus.Off, data[2].Drs);
+    }
+
+    [Fact]
+    public async Task IncludeDriverDetails_attaches_the_matching_driver_and_dedups_by_session_and_driver_number()
+    {
+        var (api, mockHttp) = MockHttpFactory.ForFixture("car_data", "CarData.json");
+        const string sainzOnly = """[{"driver_number":55,"last_name":"Sainz","session_key":9159,"meeting_key":1219}]""";
+        // All three fixture rows share driver_number=55/session_key=9159 — only one /drivers call should happen for them.
+        var driversRequest = mockHttp.When("https://api.openf1.org/v1/drivers?session_key=9159&driver_number=55").Respond("application/json", sainzOnly);
+
+        var data = await api.GetCarDataAsync().IncludeDriverDetails();
+
+        Assert.Equal(3, data.Length);
+        Assert.All(
+            data,
+            d =>
+            {
+                Assert.NotNull(d.DriverDetails);
+                Assert.Equal(55, d.DriverDetails!.DriverNumber);
+                Assert.Equal("Sainz", d.DriverDetails.LastName);
+            }
+        );
+        Assert.Equal(1, mockHttp.GetMatchCount(driversRequest));
     }
 }

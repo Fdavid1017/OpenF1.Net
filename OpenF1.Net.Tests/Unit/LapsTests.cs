@@ -1,3 +1,4 @@
+using System.Net;
 using OpenF1.Net.Models.Enums;
 using OpenF1.Net.Tests.TestHelpers;
 using RichardSzalay.MockHttp;
@@ -69,6 +70,43 @@ public class LapsTests
                 Assert.Equal("Verstappen", l.DriverDetails.LastName);
             }
         );
+        Assert.Equal(1, mockHttp.GetMatchCount(driversRequest));
+    }
+
+    [Fact]
+    public async Task IncludeDriverDetails_with_resolveImages_true_also_resolves_the_attached_drivers_images()
+    {
+        var (api, mockHttp) = MockHttpFactory.ForFixture("laps", "Laps.json");
+        mockHttp.Fallback.Respond(HttpStatusCode.NotFound);
+        const string verstappenOnly =
+            """[{"driver_number":1,"first_name":"Max","last_name":"Verstappen","name_acronym":"VER","team_name":"Red Bull Racing","session_key":9161,"meeting_key":1219}]""";
+        mockHttp.When("https://api.openf1.org/v1/drivers?session_key=9161&driver_number=1").Respond("application/json", verstappenOnly);
+        mockHttp
+            .When("https://media.formula1.com/content/dam/fom-website/2018-redesign-assets/drivers/2023/MAXVER01.png")
+            .Respond(HttpStatusCode.OK);
+
+        var data = await api.GetLapsAsync().IncludeDriverDetails(resolveImages: true);
+
+        Assert.All(
+            data,
+            l =>
+                Assert.Equal(
+                    "https://media.formula1.com/content/dam/fom-website/2018-redesign-assets/drivers/2023/MAXVER01.png",
+                    l.DriverDetails!.HeadshotUrl
+                )
+        );
+    }
+
+    [Fact]
+    public async Task IncludeDriverDetails_leaves_DriverDetails_null_when_no_driver_matches_and_still_dedups()
+    {
+        var (api, mockHttp) = MockHttpFactory.ForFixture("laps", "Laps.json");
+        var driversRequest = mockHttp.When("https://api.openf1.org/v1/drivers?session_key=9161&driver_number=1").Respond("application/json", "[]");
+
+        var data = await api.GetLapsAsync().IncludeDriverDetails();
+
+        Assert.Equal(2, data.Length);
+        Assert.All(data, l => Assert.Null(l.DriverDetails));
         Assert.Equal(1, mockHttp.GetMatchCount(driversRequest));
     }
 }

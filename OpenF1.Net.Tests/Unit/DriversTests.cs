@@ -106,4 +106,23 @@ public class DriversTests
         );
         Assert.Null(verstappen.FullBodyUrlRight);
     }
+
+    [Fact]
+    public async Task ResolveImages_treats_a_probe_that_throws_as_not_found_and_keeps_trying_other_candidates()
+    {
+        var (api, mockHttp) = MockHttpFactory.ForFixture("drivers", "Drivers.json");
+        // Every probe throws instead of returning a status code, except the one candidate that should win.
+        mockHttp.Fallback.Throw(new HttpRequestException("simulated network failure"));
+        mockHttp
+            .When("https://media.formula1.com/content/dam/fom-website/2018-redesign-assets/drivers/2023/MAXVER01.png")
+            .Respond(HttpStatusCode.OK);
+
+        var data = await api.GetDriversAsync().ResolveImages();
+
+        var verstappen = Assert.Single(data, d => d.NameAcronym == "VER");
+        Assert.Equal(
+            "https://media.formula1.com/content/dam/fom-website/2018-redesign-assets/drivers/2023/MAXVER01.png",
+            verstappen.HeadshotUrl
+        );
+    }
 }
