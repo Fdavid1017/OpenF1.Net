@@ -18,6 +18,9 @@
     <Compile Remove="OpenF1.Net.Tests\**" />
     <EmbeddedResource Remove="OpenF1.Net.Tests\**" />
     <None Remove="OpenF1.Net.Tests\**" />
+    <Compile Remove="OpenF1.Net.ManualTests\**" />
+    <EmbeddedResource Remove="OpenF1.Net.ManualTests\**" />
+    <None Remove="OpenF1.Net.ManualTests\**" />
   </ItemGroup>
 
 </Project>
