@@ -134,6 +134,17 @@ foreach (var driver in drivers)
 }
 ```
 
+### Csapat autó-képek (`GetChampionshipTeamsAsync`)
+
+A `GetChampionshipTeamsAsync()` minden csapathoz automatikusan (opt-in hívás nélkül) feltölti a `ChampionshipTeam.CarLeftUrl` / `ChampionshipTeam.CarRightUrl` mezőket az aktuális autó bal, illetve jobb oldali renderjének URL-jével — a media.formula1.com-ról, `HEAD` kéréssel ellenőrizve a létezést, a kép letöltése nélkül. Ha egy csapathoz nem található megfelelő kép, a mező `null` marad.
+
+```csharp
+var teams = await client.GetChampionshipTeamsAsync();
+
+foreach (var team in teams)
+    Console.WriteLine($"{team.TeamName}: {team.CarLeftUrl}");
+```
+
 ### Enumok
 
 Néhány mező (`Flag`, `TyreCompound`, `SessionType`, `Category`, `Scope`, ...) erősen típusos enumként érkezik, és a válaszban lévő nyers API string (pl. `"BLACK AND WHITE"`) automatikusan a megfelelő tagra (`Flag.BlackAndWhite`) van leképezve — szűréskor ugyanez fordítva történik.

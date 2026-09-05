@@ -1,6 +1,5 @@
 using System.Globalization;
 using System.Text;
-using System.Text.RegularExpressions;
 
 namespace OpenF1.Net.Internal;
 
@@ -18,13 +17,6 @@ internal static class DriverImageResolver
 
     const int MinYear = 2017;
 
-    static readonly Dictionary<string, string> TeamSlugOverrides = new(StringComparer.Ordinal)
-    {
-        ["Haas F1 Team"] = "haas",
-    };
-
-    static readonly Regex NonAlphanumeric = new("[^a-z0-9]", RegexOptions.Compiled);
-
     /// <summary>
     /// Finds the highest-resolution official headshot available for the driver: F1's own asset is tried
     /// across years newest-first (it's the higher-resolution source), then MultiViewer's mirror is tried
@@ -41,17 +33,17 @@ internal static class DriverImageResolver
         var reference = BuildReference(firstName, lastName);
         var tla = nameAcronym.ToUpperInvariant();
 
-        foreach (var year in CandidateYearsDescending())
+        foreach (var year in ImageAssetProbe.CandidateYearsDescending(MinYear))
         {
             var url = HeadshotTemplateUrl.Replace("{year}", year.ToString(CultureInfo.InvariantCulture)).Replace("{ref}", reference);
-            if (await UrlExistsAsync(httpClient, url, ct).ConfigureAwait(false))
+            if (await ImageAssetProbe.ExistsAsync(httpClient, url, ct).ConfigureAwait(false))
                 return url;
         }
 
-        foreach (var year in CandidateYearsDescending())
+        foreach (var year in ImageAssetProbe.CandidateYearsDescending(MinYear))
         {
             var url = HeadshotFallbackTemplateUrl.Replace("{year}", year.ToString(CultureInfo.InvariantCulture)).Replace("{tla}", tla);
-            if (await UrlExistsAsync(httpClient, url, ct).ConfigureAwait(false))
+            if (await ImageAssetProbe.ExistsAsync(httpClient, url, ct).ConfigureAwait(false))
                 return url;
         }
 
@@ -72,7 +64,7 @@ internal static class DriverImageResolver
     )
     {
         var reference = BuildReference(firstName, lastName);
-        var teamSlug = TeamNameToSlug(teamName);
+        var teamSlug = TeamNameSlug.From(teamName);
 
         var left = await ResolveFullBodySideAsync(httpClient, reference, teamSlug, "left", ct).ConfigureAwait(false);
         var right = await ResolveFullBodySideAsync(httpClient, reference, teamSlug, "right", ct).ConfigureAwait(false);
@@ -81,14 +73,14 @@ internal static class DriverImageResolver
 
     static async Task<string?> ResolveFullBodySideAsync(HttpClient httpClient, string reference, string teamSlug, string side, CancellationToken ct)
     {
-        foreach (var year in CandidateYearsDescending())
+        foreach (var year in ImageAssetProbe.CandidateYearsDescending(MinYear))
         {
             var url = FullBodyTemplateUrl
                 .Replace("{year}", year.ToString(CultureInfo.InvariantCulture))
                 .Replace("{team}", teamSlug)
                 .Replace("{ref}", reference.ToLowerInvariant())
                 .Replace("{side}", side);
-            if (await UrlExistsAsync(httpClient, url, ct).ConfigureAwait(false))
+            if (await ImageAssetProbe.ExistsAsync(httpClient, url, ct).ConfigureAwait(false))
                 return url;
         }
         return null;
@@ -115,28 +107,5 @@ internal static class DriverImageResolver
                 builder.Append(c);
         }
         return builder.ToString().Normalize(NormalizationForm.FormC);
-    }
-
-    static string TeamNameToSlug(string teamName) =>
-        TeamSlugOverrides.TryGetValue(teamName, out var slug) ? slug : NonAlphanumeric.Replace(teamName.ToLowerInvariant(), "");
-
-    static IEnumerable<int> CandidateYearsDescending()
-    {
-        for (var year = DateTime.UtcNow.Year + 1; year >= MinYear; year--)
-            yield return year;
-    }
-
-    static async Task<bool> UrlExistsAsync(HttpClient httpClient, string url, CancellationToken ct)
-    {
-        try
-        {
-            using var request = new HttpRequestMessage(HttpMethod.Head, url);
-            using var response = await httpClient.SendAsync(request, HttpCompletionOption.ResponseHeadersRead, ct).ConfigureAwait(false);
-            return response.IsSuccessStatusCode;
-        }
-        catch (HttpRequestException)
-        {
-            return false;
-        }
     }
 }
