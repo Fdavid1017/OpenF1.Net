@@ -1,4 +1,5 @@
 <Solution>
   <Project Path="OpenF1.Net.csproj" />
   <Project Path="OpenF1.Net.Tests/OpenF1.Net.Tests.csproj" />
+  <Project Path="OpenF1.Net.ManualTests/OpenF1.Net.ManualTests.csproj" />
 </Solution>
