@@ -1,7 +1,7 @@
 name: Publish NuGet Package
 
-# A stabil (master) release-eket a release.yml workflow kezeli (git-cliff + tag),
-# itt csak a develop ágról készül prerelease csomag.
+# Stable (master) releases are handled by the release.yml workflow (git-cliff + tag);
+# this one only builds prerelease packages from the develop branch.
 on:
   push:
     branches:
@@ -16,7 +16,7 @@ jobs:
         with:
           fetch-depth: 0
 
-      # A commitokból kiszámolt következő stabil verzió (pl. v0.2.0)
+      # The next stable version computed from the commits (e.g. v0.2.0)
       - name: Resolve next version
         id: version
         uses: orhun/git-cliff-action@v4
@@ -24,7 +24,7 @@ jobs:
           config: cliff.toml
           args: --bumped-version
 
-      # A csomag releaseNotes mezője az utolsó tag óta keletkezett commitokból
+      # The package's releaseNotes field is built from the commits since the last tag
       - name: Generate release notes
         uses: orhun/git-cliff-action@v4
         with:
@@ -33,7 +33,7 @@ jobs:
         env:
           OUTPUT: RELEASE_NOTES.md
 
-      # Prerelease verzió: <következő stabil>-dev.<időbélyeg>, pl. 0.2.0-dev.20260825171044
+      # Prerelease version: <next stable>-dev.<timestamp>, e.g. 0.2.0-dev.20260825171044
       - name: Compose prerelease version
         id: pack_version
         run: |
