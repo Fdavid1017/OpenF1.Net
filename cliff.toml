@@ -1,0 +1,68 @@
+# git-cliff configuration -- https://git-cliff.org/docs/configuration
+
+[changelog]
+header = """
+# Changelog
+
+All notable changes to this project are documented in this file.
+The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
+and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
+"""
+body = """
+
+{% if version %}\
+    ## [{{ version | trim_start_matches(pat="v") }}](https://github.com/Fdavid1017/OpenF1.Net/releases/tag/{{ version }}) - {{ timestamp | date(format="%Y-%m-%d") }}
+{% else %}\
+    ## [Unreleased]
+{% endif %}\
+{% for group, commits in commits | group_by(attribute="group") %}
+    ### {{ group | striptags | trim | upper_first }}
+
+    {% for commit in commits %}\
+        - {% if commit.scope %}**{{ commit.scope }}**: {% endif %}{{ commit.message | upper_first }} ([{{ commit.id | truncate(length=7, end="") }}](https://github.com/Fdavid1017/OpenF1.Net/commit/{{ commit.id }}))
+    {% endfor %}\
+{% endfor %}
+"""
+footer = """
+{% for release in releases -%}
+    {% if release.version and release.previous.version -%}
+        [{{ release.version | trim_start_matches(pat="v") }}]: https://github.com/Fdavid1017/OpenF1.Net/compare/{{ release.previous.version }}..{{ release.version }}
+    {% endif -%}
+{% endfor %}
+"""
+trim = true
+render_always = false
+
+[git]
+conventional_commits = true
+filter_unconventional = true
+split_commits = false
+protect_breaking_commits = true
+filter_commits = false
+tag_pattern = "v[0-9].*"
+topo_order = false
+sort_commits = "oldest"
+
+commit_parsers = [
+  { message = "^feat", group = "<!-- 0 -->Features" },
+  { message = "^fix", group = "<!-- 1 -->Bug Fixes" },
+  { message = "^perf", group = "<!-- 2 -->Performance" },
+  { message = "^refactor", group = "<!-- 3 -->Refactor" },
+  { message = "^docs", group = "<!-- 4 -->Documentation" },
+  { message = "^test", group = "<!-- 5 -->Testing" },
+  { message = "^build|^ci", group = "<!-- 6 -->Build & CI" },
+  { message = '^chore\(release\)', skip = true },
+  { message = '^chore\(deps\)', group = "<!-- 7 -->Dependencies" },
+  { message = "^chore|^style", skip = true },
+  { message = "^revert", group = "<!-- 8 -->Revert" },
+]
+
+commit_preprocessors = [
+  # `(#123)` -> link a GitHub issue-ra / PR-re
+  { pattern = '\(#([0-9]+)\)', replace = "([#${1}](https://github.com/Fdavid1017/OpenF1.Net/issues/${1}))" },
+]
+
+[bump]
+features_always_bump_minor = true
+breaking_always_bump_major = true
+initial_tag = "v0.1.0"

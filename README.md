@@ -258,3 +258,60 @@ Az `OpenF1.Net.Tests` projekt unit teszteket (rögzített JSON fixture-ökkel, `
 - OpenF1 API: https://openf1.org/
 - OpenF1 API dokumentáció: https://openf1.org/docs
 - OpenF1 forrás: https://github.com/br-g/openf1
+
+## Release-ek kezelése (git-cliff)
+
+A verziózás [Conventional Commits](https://www.conventionalcommits.org/) alapú, a
+changelog és a következő verziószám generálását a [git-cliff](https://git-cliff.org/docs/)
+végzi. A konfiguráció a repo gyökerében lévő `cliff.toml`.
+
+### Commit konvenció
+
+A `feat:` minor, a `fix:`/`perf:`/`refactor:` patch verziót emel, a `BREAKING CHANGE:`
+lábjegyzet (vagy `feat!:`) major-t. A `chore:` és `style:` commitok kimaradnak a changelogból.
+
+### Helyi használat
+
+```bash
+npx git-cliff --bumped-version          # mi lenne a következő verzió
+npx git-cliff --unreleased              # mi kerülne a következő release-be
+npx git-cliff --tag v1.2.0 -o CHANGELOG.md
+```
+
+(Alternatív telepítés: `winget install git-cliff`, `brew install git-cliff` vagy
+`cargo install git-cliff`.)
+
+### Release kiadása
+
+A `master` ágon a **Release** workflow (`.github/workflows/release.yml`) indítható
+kézzel (Actions → Release → Run workflow):
+
+1. kiszámolja a következő verziót (vagy a megadott `version` inputot használja),
+2. frissíti a `CHANGELOG.md`-t és commitolja `chore(release): prepare for vX.Y.Z` néven,
+3. létrehozza és pusholja a `vX.Y.Z` taget,
+4. `dotnet pack -p:Version=X.Y.Z` és push a GitHub Packages-re,
+5. GitHub Release-t hoz létre a generált release-jegyzettel.
+
+A `dry_run` inputtal minden publikálás nélkül megnézhető a számolt verzió és a changelog.
+
+### Csomag release note
+
+A workflow-k a `git cliff --unreleased --strip all` kimenetét `RELEASE_NOTES.md`-be írják,
+a csproj `SetPackageReleaseNotes` targetje pedig ezt tölti be a nuspec `<releaseNotes>`
+mezőjébe. Így a NuGet csomag oldalán a "Release Notes" szekció automatikusan az adott
+verzióhoz tartozó commitokat mutatja. Ha a `RELEASE_NOTES.md` nincs a repo gyökerében
+(sima lokális build), a mező üresen marad.
+
+Lokálisan így reprodukálható (a `&&` Windows PowerShell 5.1-ben nem működik,
+ezért két külön parancs):
+
+```bash
+npx git-cliff --unreleased --strip all -o RELEASE_NOTES.md
+```
+
+```bash
+dotnet pack OpenF1.Net.csproj -c Release -o ./nupkg
+```
+
+A `develop` ágra pusholt commitokból továbbra is automatikus prerelease csomag készül
+(`.github/workflows/nuget-push.yml`).

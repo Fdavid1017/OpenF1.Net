@@ -362,3 +362,7 @@ MigrationBackup/
 # Fody - auto-generated XML schema
 FodyWeavers.xsd
 openF1-documentation.pdf
+
+# git-cliff altal generalt ideiglenes release-jegyzet
+RELEASE_NOTES.md
+nupkg/

@@ -1,9 +1,10 @@
 name: Publish NuGet Package
 
+# A stabil (master) release-eket a release.yml workflow kezeli (git-cliff + tag),
+# itt csak a develop ágról készül prerelease csomag.
 on:
   push:
     branches:
-      - master
       - develop
 
 jobs:
@@ -12,11 +13,22 @@ jobs:
     steps:
       - name: Checkout repo
         uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      # A csomag releaseNotes mezője az utolsó tag óta keletkezett commitokból
+      - name: Generate release notes
+        uses: orhun/git-cliff-action@v4
+        with:
+          config: cliff.toml
+          args: --unreleased --strip all
+        env:
+          OUTPUT: RELEASE_NOTES.md
 
       - name: Setup .NET
         uses: actions/setup-dotnet@v4
         with:
-          dotnet-version: '8.0.x'
+          dotnet-version: '10.0.x'
 
       - name: Build
         run: dotnet build --configuration Release
@@ -29,11 +41,6 @@ jobs:
       - name: Pack (Develop - Prerelease)
         if: github.ref == 'refs/heads/develop'
         run: dotnet pack --configuration Release --no-build --output ./nupkg --version-suffix "${{ env.BUILD_SUFFIX }}"
-
-      # Master ágon a stabil verziót csomagolja
-      - name: Pack (Master - Release)
-        if: github.ref == 'refs/heads/master'
-        run: dotnet pack --configuration Release --no-build --output ./nupkg
 
       - name: Push to GitHub Packages
         run: dotnet nuget push "./nupkg/*.nupkg" --source "https://nuget.pkg.github.com/${{ github.repository_owner }}/index.json" --api-key ${{ secrets.GITHUB_TOKEN }} --skip-duplicate

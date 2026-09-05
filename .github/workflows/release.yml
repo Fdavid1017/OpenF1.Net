@@ -1,0 +1,102 @@
+name: Release
+
+on:
+  workflow_dispatch:
+    inputs:
+      version:
+        description: 'Explicit version tag (e.g. v1.2.0). Leave empty to let git-cliff bump automatically.'
+        required: false
+        type: string
+      dry_run:
+        description: 'Only show the computed version and changelog, do not tag or publish.'
+        required: false
+        default: false
+        type: boolean
+
+permissions:
+  contents: write
+  packages: write
+
+jobs:
+  release:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repo
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Resolve next version
+        id: version
+        uses: orhun/git-cliff-action@v4
+        with:
+          config: cliff.toml
+          args: --bumped-version
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Pick version
+        id: pick
+        run: |
+          VERSION="${{ inputs.version }}"
+          if [ -z "$VERSION" ]; then
+            VERSION="${{ steps.version.outputs.content }}"
+          fi
+          VERSION="$(echo "$VERSION" | tr -d '[:space:]')"
+          echo "tag=$VERSION" >> "$GITHUB_OUTPUT"
+          echo "number=${VERSION#v}" >> "$GITHUB_OUTPUT"
+          echo "Releasing $VERSION"
+
+      - name: Generate CHANGELOG.md
+        uses: orhun/git-cliff-action@v4
+        with:
+          config: cliff.toml
+          args: --tag ${{ steps.pick.outputs.tag }} --output CHANGELOG.md
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Generate release notes
+        uses: orhun/git-cliff-action@v4
+        with:
+          config: cliff.toml
+          args: --tag ${{ steps.pick.outputs.tag }} --unreleased --strip all
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          OUTPUT: RELEASE_NOTES.md
+
+      - name: Show dry run result
+        if: ${{ inputs.dry_run }}
+        run: |
+          echo "### Dry run: ${{ steps.pick.outputs.tag }}" >> "$GITHUB_STEP_SUMMARY"
+          cat RELEASE_NOTES.md >> "$GITHUB_STEP_SUMMARY"
+
+      - name: Commit changelog and tag
+        if: ${{ !inputs.dry_run }}
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add CHANGELOG.md
+          git commit -m "chore(release): prepare for ${{ steps.pick.outputs.tag }}" || echo "no changelog changes"
+          git tag -a "${{ steps.pick.outputs.tag }}" -m "${{ steps.pick.outputs.tag }}"
+          git push origin HEAD:${{ github.ref_name }}
+          git push origin "${{ steps.pick.outputs.tag }}"
+
+      - name: Setup .NET
+        if: ${{ !inputs.dry_run }}
+        uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: '10.0.x'
+
+      - name: Pack
+        if: ${{ !inputs.dry_run }}
+        run: dotnet pack OpenF1.Net.csproj --configuration Release --output ./nupkg -p:Version=${{ steps.pick.outputs.number }}
+
+      - name: Push to GitHub Packages
+        if: ${{ !inputs.dry_run }}
+        run: dotnet nuget push "./nupkg/*.nupkg" --source "https://nuget.pkg.github.com/${{ github.repository_owner }}/index.json" --api-key ${{ secrets.GITHUB_TOKEN }} --skip-duplicate
+
+      - name: Create GitHub release
+        if: ${{ !inputs.dry_run }}
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: gh release create "${{ steps.pick.outputs.tag }}" --title "${{ steps.pick.outputs.tag }}" --notes-file RELEASE_NOTES.md ./nupkg/*.nupkg
