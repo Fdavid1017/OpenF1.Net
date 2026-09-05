@@ -313,5 +313,11 @@ npx git-cliff --unreleased --strip all -o RELEASE_NOTES.md
 dotnet pack OpenF1.Net.csproj -c Release -o ./nupkg
 ```
 
-A `develop` ágra pusholt commitokból továbbra is automatikus prerelease csomag készül
-(`.github/workflows/nuget-push.yml`).
+### Develop prerelease
+
+A `develop` ágra pusholt commitokból automatikusan prerelease csomag készül
+(`.github/workflows/nuget-push.yml`). A verzió a git-cliff által számolt *következő stabil*
+verzió, `-dev.<időbélyeg>` utótaggal — pl. ha a develop-on van egy `feat:` commit a
+`v0.1.0` tag óta, a csomag `0.2.0-dev.20260825171044` néven jelenik meg. SemVer szerint ez
+prerelease, tehát a NuGet csak akkor ajánlja fel, ha a prerelease csomagok engedélyezve vannak,
+és mindig kisebb, mint a majdani stabil `0.2.0`.

@@ -16,6 +16,14 @@ jobs:
         with:
           fetch-depth: 0
 
+      # A commitokból kiszámolt következő stabil verzió (pl. v0.2.0)
+      - name: Resolve next version
+        id: version
+        uses: orhun/git-cliff-action@v4
+        with:
+          config: cliff.toml
+          args: --bumped-version
+
       # A csomag releaseNotes mezője az utolsó tag óta keletkezett commitokból
       - name: Generate release notes
         uses: orhun/git-cliff-action@v4
@@ -25,22 +33,24 @@ jobs:
         env:
           OUTPUT: RELEASE_NOTES.md
 
+      # Prerelease verzió: <következő stabil>-dev.<időbélyeg>, pl. 0.2.0-dev.20260825171044
+      - name: Compose prerelease version
+        id: pack_version
+        run: |
+          NEXT="$(echo '${{ steps.version.outputs.content }}' | tr -d '[:space:]')"
+          NEXT="${NEXT#v}"
+          echo "value=${NEXT}-dev.$(date +'%Y%m%d%H%M%S')" >> "$GITHUB_OUTPUT"
+
       - name: Setup .NET
         uses: actions/setup-dotnet@v4
         with:
           dotnet-version: '10.0.x'
 
       - name: Build
-        run: dotnet build --configuration Release
-
-      # Develop ágon időbélyeg alapján állít be egyedi verzió-utótagot (pl. dev.20260825171044)
-      - name: Set Version Suffix (Develop)
-        if: github.ref == 'refs/heads/develop'
-        run: echo "BUILD_SUFFIX=dev.$(date +'%Y%m%d%H%M%S')" >> $GITHUB_ENV
+        run: dotnet build --configuration Release -p:Version=${{ steps.pack_version.outputs.value }}
 
       - name: Pack (Develop - Prerelease)
-        if: github.ref == 'refs/heads/develop'
-        run: dotnet pack --configuration Release --no-build --output ./nupkg --version-suffix "${{ env.BUILD_SUFFIX }}"
+        run: dotnet pack OpenF1.Net.csproj --configuration Release --no-build --output ./nupkg -p:Version=${{ steps.pack_version.outputs.value }}
 
       - name: Push to GitHub Packages
         run: dotnet nuget push "./nupkg/*.nupkg" --source "https://nuget.pkg.github.com/${{ github.repository_owner }}/index.json" --api-key ${{ secrets.GITHUB_TOKEN }} --skip-duplicate
