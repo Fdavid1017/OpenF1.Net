@@ -11,6 +11,8 @@ public class SessionResult
     public bool Dsq { get; init; }
     /// <summary>The unique number assigned to an F1 driver for the season (cf. Wikipedia).</summary>
     public int DriverNumber { get; init; }
+    /// <summary>The driver this result belongs to. Null unless the query was built with .IncludeDriverDetails().</summary>
+    public Driver? DriverDetails { get; internal set; }
     /// <summary>
     /// Either the best lap time (for practice or qualifying), or the total race time (for races), in
     /// seconds. In qualifying, this holds three values for Q1, Q2, and Q3 instead.

@@ -1,5 +1,6 @@
 using OpenF1.Net.Models.Enums;
 using OpenF1.Net.Tests.TestHelpers;
+using RichardSzalay.MockHttp;
 
 namespace OpenF1.Net.Tests.Unit;
 
@@ -34,5 +35,40 @@ public class LapsTests
         Assert.Null(inProgress.DurationSector1);
         Assert.Null(inProgress.StSpeed);
         Assert.Empty(inProgress.SegmentsSector1);
+    }
+
+    [Fact]
+    public async Task Without_IncludeDriverDetails_DriverDetails_stays_null()
+    {
+        var (api, _) = MockHttpFactory.ForFixture("laps", "Laps.json");
+
+        var data = await api.GetLapsAsync();
+
+        Assert.All(data, l => Assert.Null(l.DriverDetails));
+    }
+
+    [Fact]
+    public async Task IncludeDriverDetails_attaches_the_matching_driver_and_dedups_by_session_and_driver_number()
+    {
+        var (api, mockHttp) = MockHttpFactory.ForFixture("laps", "Laps.json");
+        // The real API would filter server-side to just Verstappen for this querystring — mirror that here
+        // rather than returning the full (unfiltered) Drivers.json fixture.
+        const string verstappenOnly = """[{"driver_number":1,"last_name":"Verstappen","session_key":9161,"meeting_key":1219}]""";
+        // Both fixture laps share driver_number=1/session_key=9161 — only one /drivers call should happen for the two of them.
+        var driversRequest = mockHttp.When("https://api.openf1.org/v1/drivers?session_key=9161&driver_number=1").Respond("application/json", verstappenOnly);
+
+        var data = await api.GetLapsAsync().IncludeDriverDetails();
+
+        Assert.Equal(2, data.Length);
+        Assert.All(
+            data,
+            l =>
+            {
+                Assert.NotNull(l.DriverDetails);
+                Assert.Equal(1, l.DriverDetails!.DriverNumber);
+                Assert.Equal("Verstappen", l.DriverDetails.LastName);
+            }
+        );
+        Assert.Equal(1, mockHttp.GetMatchCount(driversRequest));
     }
 }

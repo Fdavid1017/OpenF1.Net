@@ -7,6 +7,8 @@ public class TeamRadioMessage
     public DateTime Date { get; init; }
     /// <summary>The unique number assigned to an F1 driver for the season (cf. Wikipedia).</summary>
     public int DriverNumber { get; init; }
+    /// <summary>The driver this radio message belongs to. Null unless the query was built with .IncludeDriverDetails().</summary>
+    public Driver? DriverDetails { get; internal set; }
     /// <summary>The unique identifier for the meeting. Use latest to identify the latest or current meeting.</summary>
     public int MeetingKey { get; init; }
     /// <summary>URL of the radio recording.</summary>

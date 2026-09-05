@@ -10,5 +10,8 @@ public class TeamRadioFilterFields
     public SessionKeyRef SessionKey => throw new NotSupportedException();
 }
 
-public class TeamRadioQuery(Func<string, CancellationToken, Task<TeamRadioMessage[]>> execute, CancellationToken ct)
-    : EndpointQuery<TeamRadioFilterFields, TeamRadioMessage>(execute, ct);
+public class TeamRadioQuery(
+    Func<string, CancellationToken, Task<TeamRadioMessage[]>> execute,
+    Func<int, int, bool, CancellationToken, Task<Driver?>> fetchDriverDetails,
+    CancellationToken ct
+) : DriverEnrichableQuery<TeamRadioFilterFields, TeamRadioMessage>(execute, fetchDriverDetails, t => t.SessionKey, t => t.DriverNumber, (t, d) => t.DriverDetails = d, ct);

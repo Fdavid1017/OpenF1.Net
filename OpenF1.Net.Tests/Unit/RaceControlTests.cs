@@ -1,5 +1,6 @@
 using OpenF1.Net.Models.Enums;
 using OpenF1.Net.Tests.TestHelpers;
+using RichardSzalay.MockHttp;
 
 namespace OpenF1.Net.Tests.Unit;
 
@@ -34,5 +35,22 @@ public class RaceControlTests
         Assert.Equal(Scope.Driver, unknownCategoryRow.Scope);
         Assert.Equal(1, unknownCategoryRow.DriverNumber);
         Assert.Equal(2, unknownCategoryRow.QualifyingPhase);
+    }
+
+    [Fact]
+    public async Task IncludeDriverDetails_skips_rows_with_no_driver_number()
+    {
+        var (api, mockHttp) = MockHttpFactory.ForFixture("race_control", "RaceControl.json");
+        const string verstappenOnly = """[{"driver_number":1,"last_name":"Verstappen","session_key":9161,"meeting_key":1219}]""";
+        var driversRequest = mockHttp.When("https://api.openf1.org/v1/drivers?session_key=9161&driver_number=1").Respond("application/json", verstappenOnly);
+
+        var data = await api.GetRaceControlAsync().IncludeDriverDetails();
+
+        Assert.Null(data[0].DriverDetails);
+        Assert.Null(data[1].DriverDetails);
+        Assert.NotNull(data[2].DriverDetails);
+        Assert.Equal("Verstappen", data[2].DriverDetails!.LastName);
+        // Only the one row with a driver number should have triggered a /drivers call.
+        Assert.Equal(1, mockHttp.GetMatchCount(driversRequest));
     }
 }

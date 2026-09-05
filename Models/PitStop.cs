@@ -7,6 +7,8 @@ public class PitStop
     public DateTime Date { get; init; }
     /// <summary>The unique number assigned to an F1 driver for the season (cf. Wikipedia).</summary>
     public int DriverNumber { get; init; }
+    /// <summary>The driver this pit stop belongs to. Null unless the query was built with .IncludeDriverDetails().</summary>
+    public Driver? DriverDetails { get; internal set; }
     /// <summary>The time spent in the pit lane, in seconds. Observed null on live data despite the docs implying it's always set.</summary>
     public double? LaneDuration { get; init; }
     /// <summary>The sequential number of the lap within the session (starts at 1).</summary>

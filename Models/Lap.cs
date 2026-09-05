@@ -10,6 +10,8 @@ public class Lap
     public DateTime DateStart { get; init; }
     /// <summary>The unique number assigned to an F1 driver for the season (cf. Wikipedia).</summary>
     public int DriverNumber { get; init; }
+    /// <summary>The driver this lap belongs to. Null unless the query was built with .IncludeDriverDetails().</summary>
+    public Driver? DriverDetails { get; internal set; }
     /// <summary>The time taken, in seconds, to complete the first sector of the lap.</summary>
     // SnakeCaseLower's default conversion drops the underscore before a trailing digit (-> "duration_sector1"), so it's spelled out explicitly here.
     [JsonPropertyName("duration_sector_1")]

@@ -28,4 +28,19 @@ public partial class OpenF1Client
             .ResolveFullBodyUrlsAsync(_httpClient, driver.FirstName, driver.LastName, driver.TeamName, ct)
             .ConfigureAwait(false);
     }
+
+    /// <summary>
+    /// Fetches the single driver matching a session_key + driver_number pair — used internally by
+    /// .IncludeDriverDetails() on every other query that carries a driver number. Returns null when no driver
+    /// matches (not treated as an error).
+    /// </summary>
+    internal async Task<Driver?> FetchDriverDetailsAsync(int sessionKey, int driverNumber, bool resolveImages, CancellationToken ct)
+    {
+        var drivers = await ExecuteAsync<Driver>("drivers", $"session_key={sessionKey}&driver_number={driverNumber}", ct).ConfigureAwait(false);
+        var driver = drivers.Length > 0 ? drivers[0] : null;
+        if (driver is not null && resolveImages)
+            await ResolveDriverImagesAsync(driver, ct).ConfigureAwait(false);
+
+        return driver;
+    }
 }

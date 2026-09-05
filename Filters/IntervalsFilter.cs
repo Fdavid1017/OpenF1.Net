@@ -11,5 +11,8 @@ public class IntervalsFilterFields
     // gap_to_leader/interval intentionally absent — polymorphic wrapper types aren't filterable
 }
 
-public class IntervalsQuery(Func<string, CancellationToken, Task<Interval[]>> execute, CancellationToken ct)
-    : EndpointQuery<IntervalsFilterFields, Interval>(execute, ct);
+public class IntervalsQuery(
+    Func<string, CancellationToken, Task<Interval[]>> execute,
+    Func<int, int, bool, CancellationToken, Task<Driver?>> fetchDriverDetails,
+    CancellationToken ct
+) : DriverEnrichableQuery<IntervalsFilterFields, Interval>(execute, fetchDriverDetails, i => i.SessionKey, i => i.DriverNumber, (i, d) => i.DriverDetails = d, ct);

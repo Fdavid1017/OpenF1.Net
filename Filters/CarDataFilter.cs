@@ -17,5 +17,8 @@ public class CarDataFilterFields
     public int Throttle => throw new NotSupportedException();
 }
 
-public class CarDataQuery(Func<string, CancellationToken, Task<CarDataPoint[]>> execute, CancellationToken ct)
-    : EndpointQuery<CarDataFilterFields, CarDataPoint>(execute, ct);
+public class CarDataQuery(
+    Func<string, CancellationToken, Task<CarDataPoint[]>> execute,
+    Func<int, int, bool, CancellationToken, Task<Driver?>> fetchDriverDetails,
+    CancellationToken ct
+) : DriverEnrichableQuery<CarDataFilterFields, CarDataPoint>(execute, fetchDriverDetails, c => c.SessionKey, c => c.DriverNumber, (c, d) => c.DriverDetails = d, ct);

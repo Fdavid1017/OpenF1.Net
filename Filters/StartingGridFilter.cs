@@ -11,5 +11,8 @@ public class StartingGridFilterFields
     public SessionKeyRef SessionKey => throw new NotSupportedException();
 }
 
-public class StartingGridQuery(Func<string, CancellationToken, Task<StartingGridPosition[]>> execute, CancellationToken ct)
-    : EndpointQuery<StartingGridFilterFields, StartingGridPosition>(execute, ct);
+public class StartingGridQuery(
+    Func<string, CancellationToken, Task<StartingGridPosition[]>> execute,
+    Func<int, int, bool, CancellationToken, Task<Driver?>> fetchDriverDetails,
+    CancellationToken ct
+) : DriverEnrichableQuery<StartingGridFilterFields, StartingGridPosition>(execute, fetchDriverDetails, g => g.SessionKey, g => g.DriverNumber, (g, d) => g.DriverDetails = d, ct);

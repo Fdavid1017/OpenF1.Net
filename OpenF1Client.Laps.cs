@@ -7,5 +7,5 @@ public partial class OpenF1Client
 {
     /// <summary>Detailed information about individual laps.</summary>
     public LapsQuery GetLapsAsync(CancellationToken ct = default) =>
-        new((qs, c) => ExecuteAsync<Lap>("laps", qs, c), ct);
+        new((qs, c) => ExecuteAsync<Lap>("laps", qs, c), FetchDriverDetailsAsync, ct);
 }
