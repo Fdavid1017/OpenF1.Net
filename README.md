@@ -120,6 +120,20 @@ foreach (var meeting in meetings)
 }
 ```
 
+### Driver-képek (`ResolveImages`)
+
+A `GetDriversAsync()` lekérdezésre láncolható `.ResolveImages()` opcionálisan feloldja driverenként a legnagyobb elérhető felbontású hivatalos F1 headshot URL-t, és kitölti a `Driver.FullBodyUrlLeft` / `Driver.FullBodyUrlRight` mezőket a driver aktuális csapatához tartozó egész alakos, bal illetve jobb oldali képekkel. Ehhez nem az OpenF1 API-t hívjuk, hanem a media.formula1.com-ot (elsődleges forrás) és az assets.multiviewer.dev-et (tartalék, ha a hivatalos kép nem található) — kizárólag `HEAD` kéréssel ellenőrizve, hogy egy adott URL létezik-e, a kép ténylegesen sosem töltődik le. Ez driverenként több extra HTTP kérést jelenthet, ezért alapból ki van kapcsolva: `.ResolveImages()` nélkül a `Driver.HeadshotUrl` az OpenF1 API által visszaadott érték marad, a `FullBodyUrlLeft`/`FullBodyUrlRight` pedig `null`.
+
+```csharp
+var drivers = await client.GetDriversAsync().ResolveImages();
+
+foreach (var driver in drivers)
+{
+    Console.WriteLine($"{driver.FullName}: {driver.HeadshotUrl}");
+    Console.WriteLine($"  bal: {driver.FullBodyUrlLeft}, jobb: {driver.FullBodyUrlRight}");
+}
+```
+
 ### Enumok
 
 Néhány mező (`Flag`, `TyreCompound`, `SessionType`, `Category`, `Scope`, ...) erősen típusos enumként érkezik, és a válaszban lévő nyers API string (pl. `"BLACK AND WHITE"`) automatikusan a megfelelő tagra (`Flag.BlackAndWhite`) van leképezve — szűréskor ugyanez fordítva történik.
